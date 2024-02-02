@@ -14,6 +14,7 @@ import prepare
 
 
 class PreprocessDataTask(luigi.Task):
+    """Preprocess data including converting raw data to changes between pairs of years."""
 
     def requires(self):
         """Require data to preprocess."""
