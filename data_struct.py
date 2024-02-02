@@ -52,9 +52,9 @@ class Observation:
             Dictionary serialization of this record.
         """
         return {
-            'ratioSector': self._ratio,
-            'gdp': self._gdp,
-            'population': self._population
+            'ratioSector': self.get_ratio(),
+            'gdp': self.get_gdp(),
+            'population': self.get_population()
         }
 
     @classmethod
@@ -170,14 +170,14 @@ class Change:
             Dictionary serialization of this record.
         """
         return {
-            'region': self._region,
-            'sector': self._sector,
-            'year': self._year,
-            'years': self._years,
-            'gdpChange': self._gdp_change,
-            'populationChange': self._population_change,
-            'beforeRatio': self._before_ratio,
-            'afterRatio': self._after_ratio,
+            'region': self.get_region(),
+            'sector': self.get_sector(),
+            'year': self.get_year(),
+            'years': self.get_years(),
+            'gdpChange': self.get_gdp_change(),
+            'populationChange': self.get_population_change(),
+            'beforeRatio': self.get_before_ratio(),
+            'afterRatio': self.get_after_ratio(),
         }
 
     def to_vector(self) -> typing.Iterable[typing.Union[int, float]]:
