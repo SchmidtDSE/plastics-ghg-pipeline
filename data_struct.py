@@ -54,9 +54,10 @@ class Change:
         """Create a new record describing a change between years.
 
         Args:
-            region: The region like "NAFTA" in which the change is observed or predicted.
+            region: The region like "NAFTA" in which the change is observed or predicted. Case
+                insensitive.
             sector: The sector like "Packaging" in which the change is observed or predicted.
-            year: The base year for the "before" values.
+            year: The base year for the "before" values. Case insensitive.
             years: The time gap in years between the start and end year. May be negative.
             gdp_change: The percent change in GDP in the region where 1% is 0.01.
             population_change: The percent change in population in the region where 1% is 0.01.
@@ -64,8 +65,8 @@ class Change:
             after_ratop: The after ratio of sector to overall net trade in the region (in year +
                 years).
         """
-        self._region = region
-        self._sector = sector
+        self._region = region.lower()
+        self._sector = sector.lower()
         self._year = year
         self._years = years
         self._gdp_change = gdp_change
@@ -211,7 +212,7 @@ class Change:
         return 1 if candidate.lower() == target.lower() else 0
 
 
-class ObservationSet:
+class ObservationIndex:
     """Collection of indexed observations for fast lookup."""
     
     def __init__(self):
@@ -227,16 +228,18 @@ class ObservationSet:
         Args:
             year: The year for which the observation was estimated or in which it was actually made.
             region: The region like "China" in which the observation was made or for which it was
-                estimated.
+                estimated. Case insensitive.
             sector: The sector like "Packaging" in which the observation was made or for which it
-                was estimated.
+                was estimated. Case insensitive.
             record: The record to add to the index.
         """
+        region_lower = region.lower()
+        sector_lower = sector.lower()
         self._years.add(year)
-        self._regions.add(region)
-        self._sectors.add(sector)
+        self._regions.add(region_lower)
+        self._sectors.add(sector_lower)
         
-        key = self._get_key(year, region, sector)
+        key = self._get_key(year, region_lower, sector_lower)
         
         self._records[key] = record
     

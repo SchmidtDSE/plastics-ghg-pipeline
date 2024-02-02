@@ -5,7 +5,6 @@ License: BSD
 
 INPUTS = [
     'years',
-    'ratioChange',
     'gdpChange',
     'populationChange',
     'beforeRatio',
