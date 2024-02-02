@@ -45,6 +45,31 @@ class Observation:
         """
         return self._population
 
+    def to_dict(self) -> typing.Dict:
+        """Serialize this record to a dictionary containing only primitives.
+
+        Returns:
+            Dictionary serialization of this record.
+        """
+        return {
+            'ratioSector': self._ratio,
+            'gdp': self._gdp,
+            'population': self._population
+        }
+
+    @classmethod
+    def from_dict(cls, target: typing.Dict) -> 'Observation':
+        """Deserialize this record from a dictionary containing only primitives.
+
+        Returns:
+            Parsed version of this record.
+        """
+        return Observation(
+            float(target['ratioSector']),
+            float(target['gdp']),
+            float(target['population'])
+        )
+
 
 class Change:
     """Record of a delta between years in input variables and response."""
@@ -181,7 +206,7 @@ class Change:
         )
 
     @classmethod
-    def from_dict(cls, target: typing.Dict) -> Change:
+    def from_dict(cls, target: typing.Dict) -> 'Change':
         """Deserialize this record from a dictionary containing only primitives.
 
         Returns:
@@ -283,7 +308,6 @@ class ObservationIndex:
             sector,
             year,
             years,
-            self._calculate_change(before.get_ratio(), after.get_ratio()),
             self._calculate_change(before.get_gdp(), after.get_gdp()),
             self._calculate_change(before.get_population(), after.get_population()),
             before.get_ratio(),
@@ -297,6 +321,17 @@ class ObservationIndex:
             Iterable over the years seen in this index.
         """
         return self._years
+
+    def has_year(self, target: int) -> bool:
+        """Determine if this index contains the given year.
+
+        Args:
+            target: The value to check for.
+
+        Returns:
+            True if found and false otherwise.
+        """
+        return target in self._years
     
     def get_regions(self) -> typing.Iterable[str]:
         """Get all observed regions.
@@ -305,6 +340,17 @@ class ObservationIndex:
             Iterable over the regions seen in this index.
         """
         return self._regions
+
+    def has_region(self, target: int) -> bool:
+        """Determine if this index contains the given region.
+
+        Args:
+            target: The value to check for.
+
+        Returns:
+            True if found and false otherwise.
+        """
+        return target.lower() in self._regions
     
     def get_sectors(self) -> typing.Iterable[str]:
         """Get all observed sectors.
@@ -313,6 +359,17 @@ class ObservationIndex:
             Iterable over the sectors seen in this index.
         """
         return self._sectors
+
+    def has_sector(self, target: int) -> bool:
+        """Determine if this index contains the given sector.
+
+        Args:
+            target: The value to check for.
+
+        Returns:
+            True if found and false otherwise.
+        """
+        return target.lower() in self._sectors
     
     def _get_key(self, year: int, region: str, sector: str) -> str:
         """Get a string which uniquely identifies a year, region, sector combination.
