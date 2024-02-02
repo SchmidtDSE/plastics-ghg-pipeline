@@ -18,7 +18,7 @@ class PreprocessDataTask(luigi.Task):
 
     def requires(self):
         """Require data to preprocess."""
-        return prepare.CheckTradeDataFile()
+        return prepare.CheckTradeDataFileTask()
 
     def run(self):
         """Preprocess data."""

@@ -30,7 +30,7 @@ class CheckFileTask(luigi.Task):
         raise NotImplementedError('Use implementor.')
 
 
-class CheckConfigFileExistsTask(CheckFileTask):
+class CheckConfigFileTask(CheckFileTask):
     """Check that the job JSON file is present."""
 
     def get_path(self) -> str:
