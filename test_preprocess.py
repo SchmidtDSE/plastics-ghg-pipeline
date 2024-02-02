@@ -1,3 +1,7 @@
+"""Tests for the preprocessing task.
+
+License: BSD
+"""
 import unittest
 
 import data_struct
