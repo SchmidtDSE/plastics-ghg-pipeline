@@ -180,17 +180,17 @@ class Change:
             'afterRatio': self._after_ratio,
         }
 
-    def to_vector(self) -> typing.Tuple:
+    def to_vector(self) -> typing.Iterable[typing.Union[int, float]]:
         """Return a vectorization of this record usable in machine learning.
 
         Returns:
             Vector version of this record.
         """
-        return (
-            self._years,
-            self._gdp_change,
-            self._population_change,
-            self._before_ratio,
+        return [
+            self.get_years(),
+            self.get_gdp_change(),
+            self.get_population_change(),
+            self.get_before_ratio(),
             self._hot_encode(self._region, 'China'),
             self._hot_encode(self._region, 'EU30'),
             self._hot_encode(self._region, 'NAFTA'),
@@ -203,7 +203,7 @@ class Change:
             self._hot_encode(self._sector, 'Packaging'),
             self._hot_encode(self._sector, 'Textiles'),
             self._hot_encode(self._sector, 'Transportation')
-        )
+        ]
 
     @classmethod
     def from_dict(cls, target: typing.Dict) -> 'Change':
