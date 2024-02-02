@@ -6,7 +6,7 @@ import csv
 import os
 import typing
 
-import luigi
+import luigi  # type: ignore
 
 import data_struct
 import const
@@ -76,7 +76,7 @@ class PreprocessDataTask(luigi.Task):
 
         tasks_non_zero = filter(lambda x: x['yearDelta'] != 0, tasks)
         tasks_with_displaced_year = map(
-            lambda x: (x['baseYear'] + x['yearDelta'], x),
+            lambda x: (x['baseYear'] + x['yearDelta'], x),  # type: ignore
             tasks_non_zero
         )
         tasks_with_included_year = filter(

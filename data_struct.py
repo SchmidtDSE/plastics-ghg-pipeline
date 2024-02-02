@@ -180,7 +180,7 @@ class Change:
             'afterRatio': self._after_ratio,
         }
 
-    def to_vector(self) -> typing.Tuple[typing.Union[int, float]]:
+    def to_vector(self) -> typing.Tuple:
         """Return a vectorization of this record usable in machine learning.
 
         Returns:
@@ -341,7 +341,7 @@ class ObservationIndex:
         """
         return self._regions
 
-    def has_region(self, target: int) -> bool:
+    def has_region(self, target: str) -> bool:
         """Determine if this index contains the given region.
 
         Args:
@@ -360,7 +360,7 @@ class ObservationIndex:
         """
         return self._sectors
 
-    def has_sector(self, target: int) -> bool:
+    def has_sector(self, target: str) -> bool:
         """Determine if this index contains the given sector.
 
         Args:

@@ -4,7 +4,7 @@ License: BSD
 """
 import os
 
-import luigi
+import luigi  # type: ignore
 
 import const
 
