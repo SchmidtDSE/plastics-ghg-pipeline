@@ -20,7 +20,7 @@ class Observation:
         self._ratio = ratio
         self._gdp = gdp
         self._population = population
-    
+
     def get_ratio(self) -> float:
         """Get the sector trade ratio.
 
@@ -28,7 +28,7 @@ class Observation:
             The ratio of sector net trade to overall net trade for a region.
         """
         return self._ratio
-    
+
     def get_gdp(self) -> float:
         """Get the estimated GDP associated with this observation.
 
@@ -36,7 +36,7 @@ class Observation:
             The estimated GDP for the region for the year of this observation.
         """
         return self._gdp
-    
+
     def get_population(self) -> float:
         """Get the estimated population associated with this observation.
 
@@ -73,9 +73,9 @@ class Observation:
 
 class Change:
     """Record of a delta between years in input variables and response."""
-    
+
     def __init__(self, region: str, sector: str, year: int, years: int, gdp_change: float,
-        population_change: float,  before_ratio: float, after_ratio: float):
+        population_change: float, before_ratio: float, after_ratio: float):
         """Create a new record describing a change between years.
 
         Args:
@@ -98,7 +98,7 @@ class Change:
         self._population_change = population_change
         self._before_ratio = before_ratio
         self._after_ratio = after_ratio
-    
+
     def get_region(self) -> str:
         """Get the region that this observation, estimate, or prediction is for.
 
@@ -106,7 +106,7 @@ class Change:
             The region like "NAFTA" in which the change is observed or predicted.
         """
         return self._region
-    
+
     def get_sector(self) -> str:
         """Get the sector that this observation, estimate, or prediction is for.
 
@@ -114,7 +114,7 @@ class Change:
             The sector like "Packaging" in which the change is observed or predicted.
         """
         return self._sector
-    
+
     def get_year(self) -> int:
         """Get the starting year that this observation, estimate, or prediction is for.
 
@@ -122,7 +122,7 @@ class Change:
             The base year for the "before" values.
         """
         return self._year
-    
+
     def get_years(self) -> int:
         """Get the year delta for this observation, estimate, or prediction.
 
@@ -130,7 +130,7 @@ class Change:
             The time gap in years between the start and end year. May be negative.
         """
         return self._years
-    
+
     def get_gdp_change(self) -> float:
         """Get the change in gross domestic product for this record's region.
 
@@ -138,7 +138,7 @@ class Change:
             The percent change in GDP in the region where 1% is 0.01.
         """
         return self._gdp_change
-    
+
     def get_population_change(self) -> float:
         """Get the change in population for this record's region.
 
@@ -146,7 +146,7 @@ class Change:
             The percent change in population in the region where 1% is 0.01.
         """
         return self._population_change
-    
+
     def get_before_ratio(self) -> float:
         """Get the ratio of sector to overall net trade in the "before" year.
 
@@ -154,7 +154,7 @@ class Change:
             The prior ratio of sector to overall net trade in the region (in year).
         """
         return self._before_ratio
-    
+
     def get_after_ratio(self) -> float:
         """Get the ratio of sector to overall net trade in the "after" year.
 
@@ -162,7 +162,7 @@ class Change:
             The after ratio of sector to overall net trade in the region (in year + years).
         """
         return self._after_ratio
-    
+
     def to_dict(self) -> typing.Dict:
         """Serialize this record to a dictionary containing only primitives.
 
@@ -182,7 +182,7 @@ class Change:
 
     def to_vector(self) -> typing.Tuple[typing.Union[int, float]]:
         """Return a vectorization of this record usable in machine learning.
-        
+
         Returns:
             Vector version of this record.
         """
@@ -239,14 +239,14 @@ class Change:
 
 class ObservationIndex:
     """Collection of indexed observations for fast lookup."""
-    
+
     def __init__(self):
         """Create a new empty collection of observations."""
         self._records: typing.Dict[str, Observation] = {}
         self._years: typing.Set[int] = set()
         self._regions: typing.Set[str] = set()
         self._sectors: typing.Set[str] = set()
-    
+
     def add(self, year: int, region: str, sector: str, record: Observation):
         """Add a new record into this index.
 
@@ -263,11 +263,11 @@ class ObservationIndex:
         self._years.add(year)
         self._regions.add(region_lower)
         self._sectors.add(sector_lower)
-        
+
         key = self._get_key(year, region_lower, sector_lower)
-        
+
         self._records[key] = record
-    
+
     def get_record(self, year: int, region: str, sector: str) -> typing.Optional[Observation]:
         """Lookup a record.
 
@@ -281,7 +281,7 @@ class ObservationIndex:
         """
         key = self._get_key(year, region, sector)
         return self._records.get(key, None)
-    
+
     def get_change(self, year: int, region: str, sector: str,
         years: int) -> typing.Optional[Change]:
         """Calculate estimated or actual change between two years within a region and sector.
@@ -313,7 +313,7 @@ class ObservationIndex:
             before.get_ratio(),
             after.get_ratio()
         )
-    
+
     def get_years(self) -> typing.Iterable[int]:
         """Get all observed years.
 
@@ -332,7 +332,7 @@ class ObservationIndex:
             True if found and false otherwise.
         """
         return target in self._years
-    
+
     def get_regions(self) -> typing.Iterable[str]:
         """Get all observed regions.
 
@@ -351,7 +351,7 @@ class ObservationIndex:
             True if found and false otherwise.
         """
         return target.lower() in self._regions
-    
+
     def get_sectors(self) -> typing.Iterable[str]:
         """Get all observed sectors.
 
@@ -370,7 +370,7 @@ class ObservationIndex:
             True if found and false otherwise.
         """
         return target.lower() in self._sectors
-    
+
     def _get_key(self, year: int, region: str, sector: str) -> str:
         """Get a string which uniquely identifies a year, region, sector combination.
 
@@ -391,7 +391,7 @@ class ObservationIndex:
             raise RuntimeError('Tabs not allowed in region or sector names.')
 
         return '\t'.join(pieces_str).lower()
-    
+
     def _calculate_change(self, before: float, after: float) -> float:
         """Calculate the change between two values.
 

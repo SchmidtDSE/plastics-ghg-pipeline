@@ -10,7 +10,7 @@ class PreprocessTests(unittest.TestCase):
         index = data_struct.ObservationIndex()
         index.add(2013, 'China', 'Transportation', data_struct.Observation(1, 2, 3))
         index.add(2014, 'China', 'Transportation', data_struct.Observation(4, 5, 6))
-        
+
         luigi_task = preprocess.PreprocessDataTask()
         tasks = luigi_task._build_tasks(index)
         count = sum(map(lambda x: 1, tasks))

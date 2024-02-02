@@ -17,7 +17,6 @@ class ObservationTests(unittest.TestCase):
         self.assertEqual(parsed.get_ratio(), 1)
 
 
-
 class ChangeTests(unittest.TestCase):
 
     def setUp(self):
@@ -94,4 +93,3 @@ class ObservationIndexTests(unittest.TestCase):
         self.assertFalse(self._index.has_year(2022))
         self.assertFalse(self._index.has_region('other'))
         self.assertFalse(self._index.has_sector('other'))
-

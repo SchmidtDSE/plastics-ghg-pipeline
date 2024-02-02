@@ -13,7 +13,6 @@ import const
 import prepare
 
 
-
 class PreprocessDataTask(luigi.Task):
 
     def requires(self):
@@ -48,7 +47,7 @@ class PreprocessDataTask(luigi.Task):
 
         with self.input().open('r') as f:
             records_raw = csv.DictReader(f)
-            
+
             for record_raw in records_raw:
                 record = data_struct.Observation.from_dict(record_raw)
                 ret_index.add(
