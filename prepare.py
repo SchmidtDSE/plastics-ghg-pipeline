@@ -30,14 +30,14 @@ class CheckFileTask(luigi.Task):
         raise NotImplementedError('Use implementor.')
 
 
-class CheckConfigFile(CheckFileTask):
+class CheckConfigFileExistsTask(CheckFileTask):
     """Check that the job JSON file is present."""
 
     def get_path(self) -> str:
         return os.path.join(const.TASK_DIR, const.CONFIG_NAME)
 
 
-class CheckTradeDataFile(CheckFileTask):
+class CheckTradeDataFileTask(CheckFileTask):
     """Check that the raw data file is present."""
 
     def get_path(self) -> str:
