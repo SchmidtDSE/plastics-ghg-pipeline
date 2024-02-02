@@ -23,7 +23,7 @@ class PreprocessDataTask(luigi.Task):
     def run(self):
         """Preprocess data."""
         indexed_records = self._build_index()
-        tasks = self._build_tasks()
+        tasks = self._build_tasks(indexed_records)
 
         output_changes = map(
             lambda x: indexed_records.get_change(
@@ -34,8 +34,9 @@ class PreprocessDataTask(luigi.Task):
             ),
             tasks
         )
+        output_changes_dict = map(lambda x: x.to_dict(), output_changes)
 
-        self._write_changes(output_changes)
+        self._write_changes(output_changes_dict)
 
     def output(self):
         """Output preprocessed data."""

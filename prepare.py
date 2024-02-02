@@ -34,11 +34,11 @@ class CheckConfigFile(CheckFileTask):
     """Check that the job JSON file is present."""
 
     def get_path(self) -> str:
-        return os.path.join([const.TASK_DIR, const.CONFIG_NAME])
+        return os.path.join(const.TASK_DIR, const.CONFIG_NAME)
 
 
 class CheckTradeDataFile(CheckFileTask):
     """Check that the raw data file is present."""
 
     def get_path(self) -> str:
-        return os.path.join([const.DEPLOY_DIR, const.TRADE_FRAME_NAME])
+        return os.path.join(const.DEPLOY_DIR, const.TRADE_FRAME_NAME)
