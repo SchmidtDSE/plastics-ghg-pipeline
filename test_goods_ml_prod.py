@@ -25,7 +25,7 @@ class GoodsMlProdTests(unittest.TestCase):
     def test_traditional_choose_set(self):
         task = goods_ml_prod.TraditionalValidateModelTask()
         self.assertTrue(task._choose_set(self._example_change) in ['train', 'test'])
-    
+
     def test_temporal_choose_set(self):
         task = goods_ml_prod.TemporalValidateModelTask()
 
@@ -39,7 +39,7 @@ class GoodsMlProdTests(unittest.TestCase):
             0.03,
             0.04
         )
-        
+
         after = data_struct.Change(
             'NAFTA',
             'Transportation',
@@ -50,10 +50,10 @@ class GoodsMlProdTests(unittest.TestCase):
             0.03,
             0.04
         )
-        
+
         self.assertEqual(task._choose_set(before), 'train')
         self.assertEqual(task._choose_set(after), 'test')
-    
+
     def test_production_choose_set(self):
         task = goods_ml_prod.TrainProdModelTask()
         self.assertEqual(task._choose_set(self._example_change), 'train')
