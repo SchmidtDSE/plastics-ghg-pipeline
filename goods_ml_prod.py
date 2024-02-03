@@ -11,6 +11,7 @@ import typing
 
 import luigi
 import skl2onnx
+import sklearn.metrics
 
 import const
 import data_struct
@@ -78,7 +79,7 @@ class TraditionalValidateModelTask(ModelTrainTask):
         """Perform split and evaluate."""
         trained_model = self._train_model()
 
-        observed_error = trained_model.get_error()
+        observed_error = trained_model.get_mae()
         if observed_error > const.ALLOWED_VALIDATION_ERROR:
             params = (observed_error, const.ALLOWED_VALIDATION_ERROR)
             raise RuntimeError('Found validation error of %.4f. Over limit of %.4f.' % params)
@@ -102,7 +103,7 @@ class TemporalValidateModelTask(ModelTrainTask):
         """Perform split and evaluate."""
         trained_model = self._train_model()
 
-        observed_error = trained_model.get_error()
+        observed_error = trained_model.get_mae()
         if observed_error > const.ALLOWED_OUT_SAMPLE_ERROR:
             params = (observed_error, const.ALLOWED_OUT_SAMPLE_ERROR)
             raise RuntimeError('Found out sample error of %.4f. Over limit of %.4f.' % params)
@@ -143,9 +144,9 @@ class TrainProdModelTask(ModelTrainTask):
         trained_model = self._train_model()
         training_data = self._load_data()['train']
 
-        with open(self.output().filename, 'wb') as f:
+        with open(self.output().path, 'wb') as f:
             train_row = training_data[0].to_vector()
-            model_onnx = skl2onnx.to_onnx(clr, train_row)
+            model_onnx = skl2onnx.to_onnx(trained_model.get_model(), train_row)
             f.write(model_onnx.SerializeToString())
 
     def output(self):
