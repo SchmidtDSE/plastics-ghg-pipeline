@@ -3,9 +3,19 @@
 License: BSD
 """
 
+CHANGE_COLS = [
+    'region',
+    'sector',
+    'year',
+    'years',
+    'gdpChange',
+    'populationChange',
+    'beforeRatio',
+    'afterRatio'
+]
+
 INPUTS = [
     'years',
-    'ratioChange',
     'gdpChange',
     'populationChange',
     'beforeRatio',
@@ -24,3 +34,9 @@ INPUTS = [
 ]
 
 RESPONSE = 'afterRatio'
+
+TASK_DIR = 'task'
+DEPLOY_DIR = 'deploy'
+
+CONFIG_NAME = 'job.json'
+TRADE_FRAME_NAME = 'trade_inputs.csv'
