@@ -205,6 +205,14 @@ class Change:
             self._hot_encode(self._sector, 'Transportation')
         ]
 
+    def get_response(self) -> float:
+        """Get the value to be predicted or that was predicted by the model.
+
+        Returns:
+            The after ratio of sector to overall net trade in the region (in year + years).
+        """
+        return self.get_after_ratio()
+
     @classmethod
     def from_dict(cls, target: typing.Dict) -> 'Change':
         """Deserialize this record from a dictionary containing only primitives.

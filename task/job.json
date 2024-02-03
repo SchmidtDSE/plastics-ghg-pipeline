@@ -1,8 +1,11 @@
 {
     "model": {
-        "type": "random forest",
+        "algorithm": "random forest",
         "depth": 25,
         "estimators": 25,
-        "features": "log2"
+        "features": "log2",
+        "alpha": null,
+        "kernel": null,
+        "degree": null
     }
 }

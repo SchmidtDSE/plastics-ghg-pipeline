@@ -2,11 +2,13 @@
 
 License: BSD
 """
+import json
 import os
 
 import luigi  # type: ignore
 
 import const
+import ml_util
 
 
 class CheckFileTask(luigi.Task):
@@ -30,11 +32,34 @@ class CheckFileTask(luigi.Task):
         raise NotImplementedError('Use implementor.')
 
 
-class CheckConfigFileTask(CheckFileTask):
+class CheckConfigFileExistsTask(CheckFileTask):
     """Check that the job JSON file is present."""
 
     def get_path(self) -> str:
         return os.path.join(const.TASK_DIR, const.CONFIG_NAME)
+
+
+class CheckConfigFileTask(luigi.Task):
+    """Check that the config file has expected values."""
+
+    def requires(self):
+        """Require data to check."""
+        return CheckConfigFileExistsTask()
+
+    def run(self):
+        """Validate the JSON contents."""
+        with self.input().open() as f:
+            content = json.load(f)
+
+        definition = ml_util.ModelDefinition.from_dict(content['model'])
+        assert definition.is_valid()
+
+        with self.output().open('w') as f:
+            json.dump(content, f)
+
+    def output(self):
+        """Output preprocessed data."""
+        return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'task_checked.json'))
 
 
 class CheckTradeDataFileTask(CheckFileTask):

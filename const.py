@@ -40,3 +40,14 @@ DEPLOY_DIR = 'deploy'
 
 CONFIG_NAME = 'job.json'
 TRADE_FRAME_NAME = 'trade_inputs.csv'
+
+SUPPORTED_ALGORITHMS = [
+    'linear',
+    'svr',
+    'tree',
+    'random forest',
+    'adaboost'
+]
+
+ALLOWED_VALIDATION_ERROR = 0.1
+ALLOWED_OUT_SAMPLE_ERROR = 0.1

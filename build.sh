@@ -2,4 +2,4 @@
 #
 # License: BSD, see LICENSE.md
 
-python -m luigi --module preprocess PreprocessDataTask --local-scheduler --workers 1
+python -m luigi --module goods_ml_prod TrainProdModelTask --local-scheduler --workers 1

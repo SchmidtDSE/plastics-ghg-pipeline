@@ -45,7 +45,7 @@ This pipeline can be deployed by merging to the `deploy` branch of the repositor
 
 Development Standards
 --------------------------------------------------------------------------------
-CI / CD should be passing before merges to `main` which is used to stage pipeline deployments and `deploy`. Where possible, please follow the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html). Please note that tests run as part of the pipeline itself and separate test files are not included. That said, developers should document which tasks are tests and expand these tests like typical unit tests as needed in the future. We allow lines to go to 100 characters.
+CI / CD should be passing before merges to `main` which is used to stage pipeline deployments and `deploy`. Where possible, please follow the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html). Please note that tests run as part of the pipeline itself and separate test files are not included. That said, developers should document which tasks are tests and expand these tests like typical unit tests as needed in the future. We allow lines to go to 100 characters. Please include docstrings where possible (optional for private members and tests).
 
 <br>
 
@@ -54,7 +54,9 @@ Open Source
 This project is released as open source (BSD and CC-BY-NC). See [LICENSE.md](https://github.com/SchmidtDSE/plastics-pipeline/blob/main/LICENSE.md) for further details. In addition to this, please note that this project uses the following open source:
 
  - [Luigi](https://luigi.readthedocs.io/en/stable/index.html) under the [Apache v2 License](https://github.com/spotify/luigi/blob/master/LICENSE).
+ - [onnx](https://onnx.ai/) under the [Apache v2 License](https://github.com/onnx/onnx/blob/main/LICENSE).
  - [scikit-learn](https://scikit-learn.org/stable/) under the [BSD License](https://github.com/scikit-learn/scikit-learn/blob/main/COPYING).
+ - [sklearn-onnx](https://github.com/onnx/sklearn-onnx) under the [Apache v2 License](https://github.com/onnx/sklearn-onnx/blob/main/LICENSE).
 
 The following are also potentially used as executables like from the command line but are not statically linked to code:
 
