@@ -133,7 +133,7 @@ class ModelSweepTask(ml_util.ModelTrainTask):
             writer = csv.DictWriter(f, fieldnames=const.EXPECTED_SWEEP_COLS)
             writer.writeheader()
             writer.writerows(outputs_str)
-    
+
     def output(self):
         """Output sweep results."""
         return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'sweep.csv'))
