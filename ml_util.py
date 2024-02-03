@@ -1,5 +1,12 @@
 import typing
 
+import sklearn.ensemble
+import sklearn.linear_model
+import sklearn.pipeline
+import sklearn.preprocessing
+import sklearn.svm
+import sklearn.tree
+
 import const
 
 OPT_FLOAT = typing.Optional[float]
@@ -130,16 +137,34 @@ def build_model(target: ModelDefinition):
     return strategy(target)
 
 def build_linear(target: ModelDefinition):
-    pass
+    return sklearn.linear_model.Ridge(alpha=target.get_alpha())
 
 def build_svr(target: ModelDefinition):
-    pass
+    model = sklearn.svm.SVR(
+        kernel=target.get_kernel(),
+        degree=target.get_degree(),
+        C=1-target.get_alpha()
+    )
+    pipeline = sklearn.pipeline.Pipeline([
+        ('scale', sklearn.preprocessing.StandardScaler()),
+        ('svr', model)
+    ])
+    return pipeline
 
 def build_tree(target: ModelDefinition):
-    pass
+    return sklearn.tree.DecisionTreeRegressor(max_depth=target.get_depth())
 
 def build_random_forest(target: ModelDefinition):
-    pass
+    return sklearn.ensemble.RandomForestRegressor(
+        n_estimators=target.get_estimators(),
+        max_depth=target.get_depth(),
+        max_features=target.get_features()
+    )
 
 def build_adaboost(target: ModelDefinition):
-    pass
+    base_estimator = sklearn.tree.DecisionTreeRegressor(max_depth=target.get_depth())
+    model = sklearn.ensemble.AdaBoostRegressor(
+        n_estimators=target.get_estimators(),
+        estimator=base_estimator
+    )
+    return model
