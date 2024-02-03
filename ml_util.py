@@ -2,26 +2,35 @@
 
 License: BSD
 """
+import csv
+import functools
+import json
 import typing
 
+import luigi  # type: ignore
 import sklearn.ensemble  # type: ignore
 import sklearn.linear_model  # type: ignore
+import sklearn.metrics  # type: ignore
 import sklearn.pipeline  # type: ignore
 import sklearn.preprocessing  # type: ignore
 import sklearn.svm  # type: ignore
 import sklearn.tree  # type: ignore
 
 import const
+import data_struct
+import prepare
+import preprocess
 
 OPT_FLOAT = typing.Optional[float]
 OPT_INT = typing.Optional[int]
 OPT_STR = typing.Optional[str]
+SPLIT_DATASETS = typing.Dict[str, typing.List[data_struct.Change]]
 
 
 class TrainedModel:
     """Structure a model which has already been trained."""
 
-    def __init__(self, model, mae: OPT_FLOAT):
+    def __init__(self, model, train_mae: OPT_FLOAT, validation_mae: OPT_FLOAT, test_mae: OPT_FLOAT):
         """Create a new record of a trained model.
 
         Args:
@@ -29,7 +38,9 @@ class TrainedModel:
             mae: The mean absolute error if one was calculated or None otherwise.
         """
         self._model = model
-        self._mae = mae
+        self._train_mae = train_mae
+        self._validation_mae = validation_mae
+        self._test_mae = test_mae
 
     def get_model(self):
         """Get the model which was trained.
@@ -39,13 +50,29 @@ class TrainedModel:
         """
         return self._model
 
-    def get_mae(self):
-        """Get the mean absolute error associated with the model.
+    def get_train_mae(self):
+        """Get the training mean absolute error associated with the model.
 
         Returns:
-            The mean absolute error if one was calculated or None otherwise.
+            The training mean absolute error if one was calculated or None otherwise.
         """
-        return self._mae
+        return self._train_mae
+
+    def get_validation_mae(self):
+        """Get the validation mean absolute error associated with the model.
+
+        Returns:
+            The validation mean absolute error if one was calculated or None otherwise.
+        """
+        return self._validation_mae
+
+    def get_test_mae(self):
+        """Get the test mean absolute error associated with the model.
+
+        Returns:
+            The test mean absolute error if one was calculated or None otherwise.
+        """
+        return self._test_mae
 
 
 class ModelDefinition:
@@ -340,3 +367,103 @@ def build_adaboost(target: ModelDefinition):
         estimator=base_estimator
     )
     return model
+
+
+class ModelTrainTask(luigi.Task):
+    """Abstract base class / template class for model training step."""
+
+    def requires(self):
+        """Require data.
+
+        Returns:
+            Dictionary with named prerequisites.
+        """
+        return {
+            'data': preprocess.PreprocessDataTask()
+        }
+
+    def _train_model(self, model, data: typing.Optional[SPLIT_DATASETS] = None) -> TrainedModel:
+        """Train a model and evaluate its performance against a hidden set.
+
+        Args:
+            model: Scikit compatible model to train.
+            data: Data to use or None if data should be loaded and assigned. Defaults to
+                None.
+
+        Returns:
+            Model with evaulation information.
+        """
+        if data is None:
+            data = self._load_data()
+
+        train_data = data['train']
+        train_inputs = [x.to_vector() for x in train_data]
+        train_outputs = [x.get_response() for x in train_data]
+        model.fit(train_inputs, train_outputs)
+
+        def get_error(set_name: str) -> OPT_FLOAT:
+            test_data = data[set_name]
+            error: typing.Optional[float] = None
+            if len(test_data) > 0:
+                test_inputs = [x.to_vector() for x in test_data]
+                test_outputs = [x.get_response() for x in test_data]
+                predicted_outputs = model.predict(test_inputs)
+                error = sklearn.metrics.mean_absolute_error(test_outputs, predicted_outputs)
+                return error
+            else:
+                return None
+
+        return TrainedModel(model, get_error('train'), get_error('validation'), get_error('test'))
+
+    def _load_data(self) -> SPLIT_DATASETS:
+        """Load preprocessed data as Change objects.
+
+        Returns:
+            Changes indexed by set assignment.
+        """
+        with self.input()['data'].open() as f:
+            reader = csv.DictReader(f)
+            changes = map(lambda x: data_struct.Change.from_dict(x), reader)
+            assigned = map(lambda x: {self._choose_set(x): [x]}, changes)
+            grouped = functools.reduce(lambda a, b: {
+                'train': a.get('train', []) + b.get('train', []),
+                'valid': a.get('valid', []) + b.get('valid', []),
+                'test': a.get('test', []) + b.get('test', [])
+            }, assigned)
+
+        return grouped
+
+    def _choose_set(self, target: data_struct.Change) -> str:
+        """Determine which set an instance should be part of like training or test."""
+        raise NotImplementedError('Use implementor.')
+
+
+class PrechosenModelTrainTask(ModelTrainTask):
+    """Abstract base class / template class for pre-choosen model training step.
+
+    Derivative ModelTrainTask usable for situations where there is already a model architecture
+    selected (outside the informational sweep).
+    """
+
+    def requires(self):
+        """Require data and config."""
+        return {
+            'data': preprocess.PreprocessDataTask(),
+            'config': prepare.CheckConfigFileTask()
+        }
+
+    def _train_model(self, model = None,
+        data: typing.Optional[SPLIT_DATASETS] = None) -> TrainedModel:
+        if model is None:
+            model_config = self._load_config()
+            model = build_model(model_config)
+
+        return super()._train_model(model)
+
+    def _load_config(self) -> ModelDefinition:
+        """Load the ModelDefinition requested of the pipeline."""
+        with self.input()['config'].open() as f:
+            content = json.load(f)
+            definition = ModelDefinition.from_dict(content['model'])
+
+        return definition

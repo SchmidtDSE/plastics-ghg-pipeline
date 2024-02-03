@@ -2,17 +2,12 @@
 
 License: BSD
 """
-import csv
-import functools
-import json
 import os
 import random
-import typing
 
 import luigi  # type: ignore
 import numpy
 import skl2onnx  # type: ignore
-import sklearn.metrics  # type: ignore
 
 import const
 import data_struct
@@ -21,95 +16,38 @@ import prepare
 import preprocess
 
 
-class ModelTrainTask(luigi.Task):
-    """Abstract base class / template class for single model training step."""
-
-    def requires(self):
-        """Require data and config."""
-        return {
-            'data': preprocess.PreprocessDataTask(),
-            'config': prepare.CheckConfigFileTask()
-        }
-
-    def _train_model(self) -> ml_util.TrainedModel:
-        """Train a model and evaluate its performance against a hidden set."""
-        split_datasets = self._load_data()
-        model_config = self._load_config()
-        model = ml_util.build_model(model_config)
-
-        train_data = split_datasets['train']
-        train_inputs = [x.to_vector() for x in train_data]
-        train_outputs = [x.get_response() for x in train_data]
-        model.fit(train_inputs, train_outputs)
-
-        test_data = split_datasets['test']
-        error: typing.Optional[float] = None
-        if len(test_data) > 0:
-            test_inputs = [x.to_vector() for x in test_data]
-            test_outputs = [x.get_response() for x in test_data]
-            predicted_outputs = model.predict(test_inputs)
-            error = sklearn.metrics.mean_absolute_error(test_outputs, predicted_outputs)
-
-        return ml_util.TrainedModel(model, error)
-
-    def _load_data(self) -> typing.Dict[str, typing.List[data_struct.Change]]:
-        """Load preprocessed data as Change objects."""
-        with self.input()['data'].open() as f:
-            reader = csv.DictReader(f)
-            changes = map(lambda x: data_struct.Change.from_dict(x), reader)
-            assigned = map(lambda x: {self._choose_set(x): [x]}, changes)
-            grouped = functools.reduce(lambda a, b: {
-                'train': a.get('train', []) + b.get('train', []),
-                'test': a.get('test', []) + b.get('test', [])
-            }, assigned)
-
-        return grouped
-
-    def _load_config(self) -> ml_util.ModelDefinition:
-        """Load the ModelDefinition requested of the pipeline."""
-        with self.input()['config'].open() as f:
-            content = json.load(f)
-            definition = ml_util.ModelDefinition.from_dict(content['model'])
-
-        return definition
-
-    def _choose_set(self, target: data_struct.Change) -> str:
-        """Determine which set an instance should be part of like training or test."""
-        raise NotImplementedError('Use implementor.')
-
-
-class TraditionalValidateModelTask(ModelTrainTask):
+class TraditionalValidateModelTask(ml_util.PrechosenModelTrainTask):
     """Perform a simple 80 / 20 train and test split to confirm performance is sane."""
 
     def run(self):
         """Perform split and evaluate."""
         trained_model = self._train_model()
 
-        observed_error = trained_model.get_mae()
-        if observed_error > const.ALLOWED_VALIDATION_ERROR:
-            params = (observed_error, const.ALLOWED_VALIDATION_ERROR)
-            raise RuntimeError('Found validation error of %.4f. Over limit of %.4f.' % params)
+        observed_error = trained_model.get_test_mae()
+        if observed_error > const.ALLOWED_TEST_ERROR:
+            params = (observed_error, const.ALLOWED_TEST_ERROR)
+            raise RuntimeError('Found test error of %.4f. Over limit of %.4f.' % params)
 
         with self.output().open('w') as f:
-            f.write('Validation error: %.4f' % observed_error)
+            f.write('Test error: %.4f' % observed_error)
 
     def output(self):
         """Output preprocessed data."""
-        return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'traditional_validation.csv'))
+        return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'traditional_test.json'))
 
     def _choose_set(self, target: data_struct.Change) -> str:
         """Perform simple random split."""
         return random.choice(['train', 'train', 'train', 'train', 'test'])
 
 
-class TemporalValidateModelTask(ModelTrainTask):
+class TemporalValidateModelTask(ml_util.PrechosenModelTrainTask):
     """Perform a temporal out of sample split to confirm performance is sane."""
 
     def run(self):
         """Perform split and evaluate."""
         trained_model = self._train_model()
 
-        observed_error = trained_model.get_mae()
+        observed_error = trained_model.get_test_mae()
         if observed_error > const.ALLOWED_OUT_SAMPLE_ERROR:
             params = (observed_error, const.ALLOWED_OUT_SAMPLE_ERROR)
             raise RuntimeError('Found out sample error of %.4f. Over limit of %.4f.' % params)
@@ -119,7 +57,7 @@ class TemporalValidateModelTask(ModelTrainTask):
 
     def output(self):
         """Output preprocessed data."""
-        return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'out_sample_validation.csv'))
+        return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'out_sample_test.csv'))
 
     def _choose_set(self, target: data_struct.Change) -> str:
         """Perform split by time."""
@@ -133,7 +71,7 @@ class TemporalValidateModelTask(ModelTrainTask):
             return 'other'
 
 
-class TrainProdModelTask(ModelTrainTask):
+class TrainProdModelTask(ml_util.PrechosenModelTrainTask):
     """Actually train the production model."""
 
     def requires(self):

@@ -49,5 +49,18 @@ SUPPORTED_ALGORITHMS = [
     'adaboost'
 ]
 
-ALLOWED_VALIDATION_ERROR = 0.1
+ALLOWED_TEST_ERROR = 0.1
 ALLOWED_OUT_SAMPLE_ERROR = 0.1
+
+EXPECTED_SWEEP_COLS = [
+    'algorithm',
+    'depth',
+    'estimators',
+    'features',
+    'alpha',
+    'kernel',
+    'degree',
+    'trainMae',
+    'validationMae',
+    'testMae'
+]
