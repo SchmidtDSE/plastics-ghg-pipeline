@@ -4,9 +4,13 @@ License: BSD
 """
 import csv
 import itertools
+import os
 import random
 import typing
 
+import luigi
+
+import const
 import data_struct
 import ml_util
 
@@ -126,9 +130,13 @@ class ModelSweepTask(ml_util.ModelTrainTask):
         outputs_str = map(lambda x: self._force_str(x), outputs)
 
         with self.output().open('w') as f:
-            writer = csv.DictWriter(f)
+            writer = csv.DictWriter(f, fieldnames=const.EXPECTED_SWEEP_COLS)
             writer.writeheader()
             writer.writerows(outputs_str)
+    
+    def output(self):
+        """Output sweep results."""
+        return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'sweep.csv'))
 
     def _choose_set(self, target: data_struct.Change) -> str:
         """Determine which set an instance should be part of like validation, trainingm or test."""

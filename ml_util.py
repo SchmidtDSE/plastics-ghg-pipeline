@@ -413,7 +413,7 @@ class ModelTrainTask(luigi.Task):
             else:
                 return None
 
-        return TrainedModel(model, get_error('train'), get_error('validation'), get_error('test'))
+        return TrainedModel(model, get_error('train'), get_error('valid'), get_error('test'))
 
     def _load_data(self) -> SPLIT_DATASETS:
         """Load preprocessed data as Change objects.
