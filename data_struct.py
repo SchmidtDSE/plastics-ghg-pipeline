@@ -2,7 +2,6 @@
 
 License: BSD
 """
-
 import typing
 
 

@@ -1,3 +1,7 @@
+"""Tests for informational sweep.
+
+License: BSD
+"""
 import functools
 import unittest
 
@@ -67,3 +71,9 @@ class ModelSweepTaskTests(unittest.TestCase):
 
         self.assertEqual(summed['invalid'], 0)
         self.assertTrue(summed['valid'] > 0)
+    
+    def test_force_str(self):
+        target = {'a': 1, 'b': None}
+        processed = self._task._force_str(target)
+        self.assertEqual(processed['a'], '1')
+        self.assertEqual(processed['b'], 'None')

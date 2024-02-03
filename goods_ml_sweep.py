@@ -1,3 +1,7 @@
+"""Logic for running an informational model sweep to monitor changes as data evolve.
+
+License: BSD
+"""
 import csv
 import itertools
 import random
@@ -8,29 +12,78 @@ import ml_util
 
 
 class SweepTask:
+    """Record of a single task to be performed or that was performed in a model sweep."""
 
     def __init__(self, definition: ml_util.ModelDefinition, model = None,
         trained_model: typing.Optional[ml_util.TrainedModel] = None):
+        """Create a new task record.
+        
+        Args:
+            definition: The definition of the model to try.
+            model: The Scikit-Learn compatible model tried which may or may not have been trained.
+                Pass None if not yet built.
+            trained_model: The model with errors / diagnostics after training. Pass None if not yet
+                trained.
+        """
         self._definition = definition
         self._model = model
         self._trained_model = trained_model
 
     def get_definition(self) -> ml_util.ModelDefinition:
+        """Get the definition of the model to be tried.
+        
+        Returns:
+            The definition of the model to try.
+        """
         return self._definition
 
     def get_model(self):
+        """Get the model built for this task.
+        
+        Returns:
+            The Scikit-Learn compatible model tried which may or may not have been trained. Returns
+            None if not yet built.
+        """
         return self._model
 
     def get_trained_model(self) -> typing.Optional[ml_util.TrainedModel]:
+        """Get the model from this task with evaluation information.
+        
+        Returns:
+            The model with errors / diagnostics after training. Returns None if not yet trained.
+        """
         return self._trained_model
 
     def get_with_model(self, target) -> 'SweepTask':
+        """Make a copy of this task record but with a new value for model.
+        
+        Args:
+            target: The Scikit-Learn compatible model tried which may or may not have been trained.
+                Pass None if not yet built.
+        
+        Returns:
+            Copy of this record with the new information.
+        """
         return SweepTask(self._definition, target, self._trained_model)
 
     def get_with_trained_model(self, target: ml_util.TrainedModel) -> 'SweepTask':
+        """Make a copy of this task record but with a new value for trained model.
+        
+        Args:
+            target: The model with errors / diagnostics after training. Pass None if not yet
+                trained.
+        
+        Returns:
+            Copy of this record with the new information.
+        """
         return SweepTask(self._definition, self._model, target)
 
     def get_sweep_dict(self) -> typing.Dict:
+        """Build a dictionary describing this record and evaluation information if available.
+        
+        Returns:
+            Dictionary describing this record made up of only primitives.
+        """
         definition_dict = self._definition.to_dict()
 
         if self._trained_model is None:
@@ -70,10 +123,12 @@ class ModelSweepTask(ml_util.ModelTrainTask):
             trained
         )
 
+        outputs_str = map(lambda x: self._force_str(x), outputs)
+
         with self.output().open('w') as f:
             writer = csv.DictWriter(f)
             writer.writeheader()
-            writer.writerows(outputs)
+            writer.writerows(outputs_str)
 
     def _choose_set(self, target: data_struct.Change) -> str:
         """Determine which set an instance should be part of like validation, trainingm or test."""
@@ -135,3 +190,9 @@ class ModelSweepTask(ml_util.ModelTrainTask):
 
         # Combine and return
         return itertools.chain(linear_objs, svr_objs, tree_objs, rf_objs, adaboost_objs)
+
+    def _force_str(self, target: typing.Dict) -> typing.Dict[str, str]:
+        """Force a dictionary's values to be only strings."""
+        items = target.items()
+        items_str = map(lambda x: (x[0], str(x[1])), items)
+        return dict(items_str)
