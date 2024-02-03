@@ -9,9 +9,9 @@ import os
 import random
 import typing
 
-import luigi
-import skl2onnx
-import sklearn.metrics
+import luigi  # type: ignore
+import skl2onnx  # type: ignore
+import sklearn.metrics  # type: ignore
 
 import const
 import data_struct

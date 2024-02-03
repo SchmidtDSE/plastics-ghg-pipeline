@@ -1,11 +1,11 @@
 import typing
 
-import sklearn.ensemble
-import sklearn.linear_model
-import sklearn.pipeline
-import sklearn.preprocessing
-import sklearn.svm
-import sklearn.tree
+import sklearn.ensemble  # type: ignore
+import sklearn.linear_model  # type: ignore
+import sklearn.pipeline  # type: ignore
+import sklearn.preprocessing  # type: ignore
+import sklearn.svm  # type: ignore
+import sklearn.tree  # type: ignore
 
 import const
 
@@ -147,10 +147,14 @@ def build_linear(target: ModelDefinition):
 
 
 def build_svr(target: ModelDefinition):
+    alpha = target.get_alpha()
+    assert alpha is not None
+    regularization_constant = 1 - alpha
+
     model = sklearn.svm.SVR(
         kernel=target.get_kernel(),
         degree=target.get_degree(),
-        C=1 - target.get_alpha()
+        C=regularization_constant
     )
     pipeline = sklearn.pipeline.Pipeline([
         ('scale', sklearn.preprocessing.StandardScaler()),
