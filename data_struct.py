@@ -187,14 +187,18 @@ class Change:
         Returns:
             Vector version of this record.
         """
-        pieces_common = [
+        pieces_common: typing.List[typing.Union[int, float]] = [
             self.get_years(),
             self.get_gdp_change(),
             self.get_population_change(),
             self.get_before_ratio()
         ]
-        pieces_region = [self._hot_encode(self._region, x) for x in const.REGIONS]
-        pieces_sector = [self._hot_encode(self._sector, x) for x in const.SECTORS]
+        pieces_region: typing.List[typing.Union[int, float]] = [
+            self._hot_encode(self._region, x) for x in const.REGIONS
+        ]
+        pieces_sector: typing.List[typing.Union[int, float]] = [
+            self._hot_encode(self._sector, x) for x in const.SECTORS
+        ]
         return pieces_common + pieces_region + pieces_sector
 
     def get_response(self) -> float:
