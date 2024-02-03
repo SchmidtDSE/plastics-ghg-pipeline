@@ -3,6 +3,24 @@
 License: BSD
 """
 
+REGIONS = [
+    'China',
+    'EU30',
+    'NAFTA',
+    'RoW'
+]
+
+SECTORS = [
+    'Agriculture',
+    'Building_Construction',
+    'Electrical_Electronic',
+    'Household_Leisure_Sports',
+    'Others',
+    'Packaging',
+    'Textiles',
+    'Transportation'
+]
+
 CHANGE_COLS = [
     'region',
     'sector',
@@ -14,24 +32,16 @@ CHANGE_COLS = [
     'afterRatio'
 ]
 
+INPUTS_REGIONS = ['region_%s' % x for x in REGIONS]
+
+INPUTS_SECTORS = ['sector_%s' % x for x in SECTORS]
+
 INPUTS = [
     'years',
     'gdpChange',
     'populationChange',
     'beforeRatio',
-    'region_China',
-    'region_EU30',
-    'region_NAFTA',
-    'region_RoW',
-    'sector_Agriculture',
-    'sector_Building_Construction',
-    'sector_Electrical_Electronic',
-    'sector_Household_Leisure_Sports',
-    'sector_Others',
-    'sector_Packaging',
-    'sector_Textiles',
-    'sector_Transportation'
-]
+] + INPUTS_REGIONS + INPUTS_SECTORS
 
 RESPONSE = 'afterRatio'
 

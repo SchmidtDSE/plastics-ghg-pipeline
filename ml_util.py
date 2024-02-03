@@ -282,7 +282,7 @@ def build_svr(target: ModelDefinition):
         Newly constructed but untrained model.
     """
     alpha = target.get_alpha()
-    assert alpha is not None
+    assert alpha is not None  # This is a noop, for mypy to know it is not None
     regularization_constant = 1 - alpha
 
     model = sklearn.svm.SVR(
