@@ -1,0 +1,4 @@
+tasks:
+  - pip: pip install -r requirements.txt
+  - devOptional: pip install mypy pycodestyle pyflakes nose2
+

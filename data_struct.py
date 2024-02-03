@@ -186,24 +186,15 @@ class Change:
         Returns:
             Vector version of this record.
         """
-        return [
+        pieces_common = [
             self.get_years(),
             self.get_gdp_change(),
             self.get_population_change(),
-            self.get_before_ratio(),
-            self._hot_encode(self._region, 'China'),
-            self._hot_encode(self._region, 'EU30'),
-            self._hot_encode(self._region, 'NAFTA'),
-            self._hot_encode(self._region, 'RoW'),
-            self._hot_encode(self._sector, 'Agriculture'),
-            self._hot_encode(self._sector, 'Building_Construction'),
-            self._hot_encode(self._sector, 'Electrical_Electronic'),
-            self._hot_encode(self._sector, 'Household_Leisure_Sports'),
-            self._hot_encode(self._sector, 'Others'),
-            self._hot_encode(self._sector, 'Packaging'),
-            self._hot_encode(self._sector, 'Textiles'),
-            self._hot_encode(self._sector, 'Transportation')
+            self.get_before_ratio()
         ]
+        pieces_region = [self._hot_encode(self._region, x) for x in const.REGIONS]
+        pieces_sector = [self._hot_encode(self._sector, x) for x in const.SECTORS]
+        return pieces_common + pieces_region + pieces_sector
 
     def get_response(self) -> float:
         """Get the value to be predicted or that was predicted by the model.
