@@ -10,6 +10,7 @@ import random
 import typing
 
 import luigi  # type: ignore
+import numpy
 import skl2onnx  # type: ignore
 import sklearn.metrics  # type: ignore
 
@@ -21,6 +22,7 @@ import preprocess
 
 
 class ModelTrainTask(luigi.Task):
+    """Abstract base class / template class for single model training step."""
 
     def requires(self):
         """Require data and config."""
@@ -29,7 +31,8 @@ class ModelTrainTask(luigi.Task):
             'config': prepare.CheckConfigFileTask()
         }
 
-    def _train_model(self):
+    def _train_model(self) -> ml_util.TrainedModel:
+        """Train a model and evaluate its performance against a hidden set."""
         split_datasets = self._load_data()
         model_config = self._load_config()
         model = ml_util.build_model(model_config)
@@ -50,6 +53,7 @@ class ModelTrainTask(luigi.Task):
         return ml_util.TrainedModel(model, error)
 
     def _load_data(self) -> typing.Dict[str, typing.List[data_struct.Change]]:
+        """Load preprocessed data as Change objects."""
         with self.input()['data'].open() as f:
             reader = csv.DictReader(f)
             changes = map(lambda x: data_struct.Change.from_dict(x), reader)
@@ -62,6 +66,7 @@ class ModelTrainTask(luigi.Task):
         return grouped
 
     def _load_config(self) -> ml_util.ModelDefinition:
+        """Load the ModelDefinition requested of the pipeline."""
         with self.input()['config'].open() as f:
             content = json.load(f)
             definition = ml_util.ModelDefinition.from_dict(content['model'])
@@ -69,6 +74,7 @@ class ModelTrainTask(luigi.Task):
         return definition
 
     def _choose_set(self, target: data_struct.Change) -> str:
+        """Determine which set an instance should be part of like training or test."""
         raise NotImplementedError('Use implementor.')
 
 
@@ -146,7 +152,8 @@ class TrainProdModelTask(ModelTrainTask):
 
         with open(self.output().path, 'wb') as f:
             train_row = training_data[0].to_vector()
-            model_onnx = skl2onnx.to_onnx(trained_model.get_model(), train_row)
+            train_row_numpy = numpy.array(train_row)  # Allows onnx type sniffing
+            model_onnx = skl2onnx.to_onnx(trained_model.get_model(), train_row_numpy)
             f.write(model_onnx.SerializeToString())
 
     def output(self):
