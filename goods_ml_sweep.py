@@ -8,7 +8,7 @@ import os
 import random
 import typing
 
-import luigi
+import luigi  # type: ignore
 
 import const
 import data_struct
