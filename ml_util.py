@@ -452,7 +452,7 @@ class PrechosenModelTrainTask(ModelTrainTask):
             'config': prepare.CheckConfigFileTask()
         }
 
-    def _train_model(self, model = None,
+    def _train_model(self, model=None,
         data: typing.Optional[SPLIT_DATASETS] = None) -> TrainedModel:
         if model is None:
             model_config = self._load_config()

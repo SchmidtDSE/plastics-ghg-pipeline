@@ -71,7 +71,7 @@ class ModelSweepTaskTests(unittest.TestCase):
 
         self.assertEqual(summed['invalid'], 0)
         self.assertTrue(summed['valid'] > 0)
-    
+
     def test_force_str(self):
         target = {'a': 1, 'b': None}
         processed = self._task._force_str(target)
