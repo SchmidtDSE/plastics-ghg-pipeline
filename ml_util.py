@@ -1,8 +1,23 @@
 import typing
 
+import const
+
 OPT_FLOAT = typing.Optional[float]
 OPT_INT = typing.Optional[int]
 OPT_STR = typing.Optional[str]
+
+
+class TrainedModel:
+
+    def __init__(self, model, mae: OPT_FLOAT):
+        self._model = model
+        self._mae = mae
+
+    def get_model(self):
+        return self._model
+
+    def get_mae(self):
+        return self._mae
 
 
 class ModelDefinition:
@@ -100,3 +115,31 @@ def check_adaboost_config(target: ModelDefinition) -> bool:
     has_depth = target.get_depth() is not None
     has_estimators = target.get_estimators() is not None
     return has_depth and has_estimators
+
+def build_model(target: ModelDefinition):
+    assert target.is_valid()
+
+    strategy = {
+        'linear': build_linear,
+        'svr': build_svr,
+        'tree': build_tree,
+        'random forest': build_random_forest,
+        'adaboost': build_adaboost
+    }[target.get_algorithm()]
+
+    return strategy(target)
+
+def build_linear(target: ModelDefinition):
+    pass
+
+def build_svr(target: ModelDefinition):
+    pass
+
+def build_tree(target: ModelDefinition):
+    pass
+
+def build_random_forest(target: ModelDefinition):
+    pass
+
+def build_adaboost(target: ModelDefinition):
+    pass

@@ -55,7 +55,7 @@ class CheckConfigFileTask(luigi.Task):
         assert definition.is_valid()
 
         with self.output().open('w') as f:
-            json.dump(definition, f)
+            json.dump(content, f)
 
     def output(self):
         """Output preprocessed data."""

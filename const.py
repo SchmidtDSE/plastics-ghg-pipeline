@@ -48,3 +48,6 @@ SUPPORTED_ALGORITHMS = [
     'random forest',
     'adaboost'
 ]
+
+ALLOWED_VALIDATION_ERROR = 0.1
+ALLOWED_OUT_SAMPLE_ERROR = 0.1

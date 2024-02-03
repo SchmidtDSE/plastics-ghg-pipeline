@@ -54,7 +54,9 @@ Open Source
 This project is released as open source (BSD and CC-BY-NC). See [LICENSE.md](https://github.com/SchmidtDSE/plastics-pipeline/blob/main/LICENSE.md) for further details. In addition to this, please note that this project uses the following open source:
 
  - [Luigi](https://luigi.readthedocs.io/en/stable/index.html) under the [Apache v2 License](https://github.com/spotify/luigi/blob/master/LICENSE).
+ - [onnx](https://onnx.ai/) under the [Apache v2 License](https://github.com/onnx/onnx/blob/main/LICENSE).
  - [scikit-learn](https://scikit-learn.org/stable/) under the [BSD License](https://github.com/scikit-learn/scikit-learn/blob/main/COPYING).
+ - [sklearn-onnx](https://github.com/onnx/sklearn-onnx) under the [Apache v2 License](https://github.com/onnx/sklearn-onnx/blob/main/LICENSE).
 
 The following are also potentially used as executables like from the command line but are not statically linked to code:
 

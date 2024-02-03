@@ -1,6 +1,6 @@
 {
     "model": {
-        "type": "random forest",
+        "algorithm": "random forest",
         "depth": 25,
         "estimators": 25,
         "features": "log2",
