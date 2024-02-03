@@ -2,8 +2,9 @@
 
 License: BSD
 """
-
 import typing
+
+import const
 
 
 class Observation:
