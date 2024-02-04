@@ -17,7 +17,7 @@ import prepare
 import projection_util
 
 
-class ProjectionTask(luigi.Task):
+class GoodsProjectionTask(luigi.Task):
     """Project data without normalization."""
 
     def requires(self):
