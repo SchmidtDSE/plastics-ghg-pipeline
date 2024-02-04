@@ -348,7 +348,7 @@ class ObservationIndexable:
             True if found and false otherwise.
         """
         raise NotImplementedError('Use implementor.')
-    
+
     def _calculate_change(self, before: float, after: float) -> float:
         """Calculate the change between two values.
 
