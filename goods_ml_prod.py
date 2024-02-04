@@ -71,7 +71,7 @@ class TemporalValidateModelTask(ml_util.PrechosenModelTrainTask):
             return 'other'
 
 
-class TrainProdModelTask(ml_util.PrechosenModelTrainTask):
+class (ml_util.PrechosenModelTrainTask):
     """Actually train the production model."""
 
     def requires(self):

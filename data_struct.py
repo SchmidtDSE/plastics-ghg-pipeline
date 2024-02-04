@@ -209,12 +209,18 @@ class Change:
         Returns:
             The after ratio of sector to overall net trade in the region (in year + years).
         """
-        response = self.get_after_ratio()
-
-        if response is None:
+        if not self.has_response():
             raise RuntimeError('Cannot provide response for unpredicted instance.')
 
-        return response
+        return self.get_after_ratio()
+    
+    def has_response(self) -> bool:
+        """Determine if the response variable value is available.
+        
+        Return:
+            True if avilable and false otherwise.
+        """
+        return response is not None
 
     @classmethod
     def from_dict(cls, target: typing.Dict) -> 'Change':

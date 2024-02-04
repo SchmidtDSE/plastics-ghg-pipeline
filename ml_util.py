@@ -424,7 +424,8 @@ class ModelTrainTask(luigi.Task):
         with self.input()['data'].open() as f:
             reader = csv.DictReader(f)
             changes = map(lambda x: data_struct.Change.from_dict(x), reader)
-            assigned = map(lambda x: {self._choose_set(x): [x]}, changes)
+            changes_allowed = filter(lambda x: x.has_response(), changes)
+            assigned = map(lambda x: {self._choose_set(x): [x]}, changes_allowed)
             grouped = functools.reduce(lambda a, b: {
                 'train': a.get('train', []) + b.get('train', []),
                 'valid': a.get('valid', []) + b.get('valid', []),
