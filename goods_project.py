@@ -29,7 +29,7 @@ class ProjectionTask(luigi.Task):
 
     def run(self):
         """Project data."""
-        self._build_inferring_idex()
+        inferring_index = self._build_inferring_idex()
 
         tasks_tuple = itertools.product(
             inferring_index.get_years(),
@@ -68,7 +68,7 @@ class ProjectionTask(luigi.Task):
         observation_dict['sector'] = sector
 
         return observation_dict
-    
+
     def _build_inferring_idex(self) -> data_struct.ObservationIndexable:
         inner_model = onnxruntime.InferenceSession(
             self.input()['model'].path,
