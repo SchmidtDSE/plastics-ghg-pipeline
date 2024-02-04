@@ -2,6 +2,7 @@
 
 License: BSD
 """
+MIN_YEAR = 2005
 
 REGIONS = [
     'China',

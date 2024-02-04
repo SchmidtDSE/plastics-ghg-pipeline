@@ -42,7 +42,7 @@ class PreprocessDataTask(luigi.Task):
         """Output preprocessed data."""
         return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'preprocessed.csv'))
 
-    def _build_index(self) -> data_struct.ObservationIndex:
+    def _build_index(self) -> data_struct.ObservationIndexable:
         """Create an index over the raw data file."""
         ret_index = data_struct.ObservationIndex()
 
@@ -60,7 +60,7 @@ class PreprocessDataTask(luigi.Task):
 
         return ret_index
 
-    def _build_tasks(self, index: data_struct.ObservationIndex) -> typing.Iterable[typing.Dict]:
+    def _build_tasks(self, index: data_struct.ObservationIndexable) -> typing.Iterable[typing.Dict]:
         """Build placeholders for the changes that need to be calculated."""
         tasks = []
 
