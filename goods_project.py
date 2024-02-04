@@ -29,13 +29,7 @@ class ProjectionTask(luigi.Task):
 
     def run(self):
         """Project data."""
-        inner_model = onnxruntime.InferenceSession(
-            self.input()['model'].path,
-            providers=['CPUExecutionProvider']
-        )
-        model = projection_util.OnnxPredictor(inner_model)
-        index = self._build_index()
-        inferring_index = projection_util.PredictionObservationIndexDecorator(index, model)
+        self._build_inferring_idex()
 
         tasks_tuple = itertools.product(
             inferring_index.get_years(),
@@ -51,10 +45,7 @@ class ProjectionTask(luigi.Task):
             output_dict
         )
 
-        with self.output().open('w') as f:
-            writer = csv.DictWriter(f, fieldnames=const.EXPECTED_PROJECTION_COLS)
-            writer.writeheader()
-            writer.writerows(output_dict_valid)
+        self._write_output(output_dict_valid)
 
     def output(self):
         """Output preprocessed data."""
@@ -77,3 +68,19 @@ class ProjectionTask(luigi.Task):
         observation_dict['sector'] = sector
 
         return observation_dict
+    
+    def _build_inferring_idex(self) -> data_struct.ObservationIndexable:
+        inner_model = onnxruntime.InferenceSession(
+            self.input()['model'].path,
+            providers=['CPUExecutionProvider']
+        )
+        model = projection_util.OnnxPredictor(inner_model)
+        index = self._build_index()
+        inferring_index = projection_util.PredictionObservationIndexDecorator(index, model)
+        return inferring_index
+
+    def _write_output(self, target: typing.Iterable[typing.Dict]):
+        with self.output().open('w') as f:
+            writer = csv.DictWriter(f, fieldnames=const.EXPECTED_PROJECTION_COLS)
+            writer.writeheader()
+            writer.writerows(target)
