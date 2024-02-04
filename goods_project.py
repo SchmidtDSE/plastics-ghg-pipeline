@@ -52,7 +52,7 @@ class ProjectionTask(luigi.Task):
         )
 
         with self.output().open('w') as f:
-            writer = csv.DictWriter(f)
+            writer = csv.DictWriter(f, fieldnames=const.EXPECTED_PROJECTION_COLS)
             writer.writeheader()
             writer.writerows(output_dict_valid)
 

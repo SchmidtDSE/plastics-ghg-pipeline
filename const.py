@@ -75,3 +75,14 @@ EXPECTED_SWEEP_COLS = [
     'validationMae',
     'testMae'
 ]
+
+NUM_YEARS_INFERENCE_WINDOW = 5
+
+EXPECTED_PROJECTION_COLS = [
+    'year',
+    'region',
+    'sector',
+    'ratioSector',
+    'gdp',
+    'population'
+]

@@ -90,8 +90,11 @@ class TrainProdModelTask(ml_util.PrechosenModelTrainTask):
 
         with open(self.output().path, 'wb') as f:
             train_row = training_data[0].to_vector()
-            train_row_numpy = numpy.array(train_row)  # Allows onnx type sniffing
-            model_onnx = skl2onnx.to_onnx(trained_model.get_model(), train_row_numpy)
+
+            # Set onnx type
+            train_array = numpy.array(train_row).astype(numpy.float32).reshape(1, len(train_row))
+            
+            model_onnx = skl2onnx.to_onnx(trained_model.get_model(), train_array)
             f.write(model_onnx.SerializeToString())
 
     def output(self):

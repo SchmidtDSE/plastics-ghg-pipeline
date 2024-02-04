@@ -22,14 +22,17 @@ class OnnxPredictor(Predictor):
     def __init__(self, model):
         self._model = model
 
-    def preidct(self, input_change: data_struct.Change) -> float:
-        input_vector = numpy.array(input_change.to_vector())  # Allows for type inference
+    def predict(self, input_change: data_struct.Change) -> float:
+        input_vector = input_change.to_vector()
+
+        # Allows for type inference
+        input_array = numpy.array(input_vector).astype(numpy.float32).reshape(1, len(input_vector))
 
         input_name = self._model.get_inputs()[0].name
         label_name = self._model.get_outputs()[0].name
         after_ratio_nest = self._model.run(
             [label_name],
-            {input_name: input_vector.astype(numpy.float32)}
+            {input_name: input_array}
         )
 
         return float(after_ratio_nest[0])
@@ -53,7 +56,7 @@ class PredictionObservationIndexDecorator(data_struct.ObservationIndexable):
         if not self._query_in_range(year, region, sector):
             return None
 
-        prior_years_offset = range(1, 6)
+        prior_years_offset = range(1, const.NUM_YEARS_INFERENCE_WINDOW + 1)
         prior_years = map(lambda x: {'year': year - x, 'years': x}, prior_years_offset)
         prior_changes = map(lambda x: self.get_change(
             x['year'],
@@ -76,8 +79,8 @@ class PredictionObservationIndexDecorator(data_struct.ObservationIndexable):
 
     def get_change(self, year: int, region: str, sector: str,
         years: int, add_to_cache: bool = True) -> typing.Optional[data_struct.Change]:
-        before = self.get_record(year, region, sector)
-        after = self.get_record(year + years, region, sector)
+        before = self.get_record(year, region, sector)  # Require the before to have a value
+        after = self._inner.get_record(year + years, region, sector)  # Allow after to be inferred
 
         if before is None or after is None:
             return None
@@ -137,7 +140,7 @@ class PredictionObservationIndexDecorator(data_struct.ObservationIndexable):
 
     def _add_inference_to_cache(self, year: int, region: str, sector: str,
         ratio: float) -> data_struct.Observation:
-        cached = self.get_record(year, region, sector)
+        cached = self._inner.get_record(year, region, sector)
         if cached is None:
             raise RuntimeError('Socioeconomic values not available.')
 
