@@ -67,8 +67,10 @@ class Observation:
         Returns:
             Parsed version of this record.
         """
+        ratio_str = str(target['ratioSector']).strip().lower()
+        no_ratio = ratio_str in ['', 'none']
         return Observation(
-            None if str(target['ratioSector']).strip() == '' else float(target['ratioSector']),
+            None if no_ratio else float(target['ratioSector']),
             float(target['gdp']),
             float(target['population'])
         )
@@ -209,18 +211,20 @@ class Change:
         Returns:
             The after ratio of sector to overall net trade in the region (in year + years).
         """
-        if not self.has_response():
+        response = self.get_after_ratio()
+
+        if response is None:
             raise RuntimeError('Cannot provide response for unpredicted instance.')
 
-        return self.get_after_ratio()
-    
+        return response
+
     def has_response(self) -> bool:
         """Determine if the response variable value is available.
-        
+
         Return:
             True if avilable and false otherwise.
         """
-        return response is not None
+        return self.get_after_ratio() is not None
 
     @classmethod
     def from_dict(cls, target: typing.Dict) -> 'Change':
@@ -461,7 +465,7 @@ class ObservationIndex(ObservationIndexable):
         return '\t'.join(pieces_str).lower()
 
 
-def build_index_from_file(path: str) -> ObservationIndexable:
+def build_index_from_file(path: str, require_response: bool = False) -> ObservationIndexable:
     ret_index = ObservationIndex()
 
     with open(path) as f:
@@ -469,11 +473,14 @@ def build_index_from_file(path: str) -> ObservationIndexable:
 
         for record_raw in records_raw:
             record = Observation.from_dict(record_raw)
-            ret_index.add(
-                int(record_raw['year']),
-                str(record_raw['region']),
-                str(record_raw['sector']),
-                record
-            )
+            included = (not require_response) or (record.get_ratio() is not None)
+
+            if included:
+                ret_index.add(
+                    int(record_raw['year']),
+                    str(record_raw['region']),
+                    str(record_raw['sector']),
+                    record
+                )
 
     return ret_index
