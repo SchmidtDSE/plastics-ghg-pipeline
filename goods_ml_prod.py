@@ -93,7 +93,7 @@ class TrainProdModelTask(ml_util.PrechosenModelTrainTask):
 
             # Set onnx type
             train_array = numpy.array(train_row).astype(numpy.float32).reshape(1, len(train_row))
-            
+
             model_onnx = skl2onnx.to_onnx(trained_model.get_model(), train_array)
             f.write(model_onnx.SerializeToString())
 

@@ -26,7 +26,8 @@ class OnnxPredictor(Predictor):
         input_vector = input_change.to_vector()
 
         # Allows for type inference
-        input_array = numpy.array(input_vector).astype(numpy.float32).reshape(1, len(input_vector))
+        num_feature = len(input_vector)  # type: ignore
+        input_array = numpy.array(input_vector).astype(numpy.float32).reshape(1, num_feature)
 
         input_name = self._model.get_inputs()[0].name
         label_name = self._model.get_outputs()[0].name
