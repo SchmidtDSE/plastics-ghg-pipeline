@@ -44,21 +44,7 @@ class PreprocessDataTask(luigi.Task):
 
     def _build_index(self) -> data_struct.ObservationIndexable:
         """Create an index over the raw data file."""
-        ret_index = data_struct.ObservationIndex()
-
-        with self.input().open('r') as f:
-            records_raw = csv.DictReader(f)
-
-            for record_raw in records_raw:
-                record = data_struct.Observation.from_dict(record_raw)
-                ret_index.add(
-                    int(record_raw['year']),
-                    str(record_raw['region']),
-                    str(record_raw['sector']),
-                    record
-                )
-
-        return ret_index
+        return data_struct.build_index_from_file(self.input().path)
 
     def _build_tasks(self, index: data_struct.ObservationIndexable) -> typing.Iterable[typing.Dict]:
         """Build placeholders for the changes that need to be calculated."""
