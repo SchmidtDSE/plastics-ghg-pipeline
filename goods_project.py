@@ -29,7 +29,7 @@ class GoodsProjectionTask(luigi.Task):
 
     def run(self):
         """Project data."""
-        inferring_index = self._build_inferring_idex()
+        inferring_index = self._build_inferring_index()
 
         tasks_tuple = itertools.product(
             inferring_index.get_years(),
@@ -57,6 +57,7 @@ class GoodsProjectionTask(luigi.Task):
 
     def _get_observation_dict(self, index: data_struct.IndexedObservations, year: int, region: str,
         sector: str) -> typing.Optional[typing.Dict]:
+        """Create a dictionary describing an observation from an IndexedObservations structure."""
         observation = index.get_record(year, region, sector)
         if observation is None:
             return None
@@ -69,7 +70,12 @@ class GoodsProjectionTask(luigi.Task):
 
         return observation_dict
 
-    def _build_inferring_idex(self) -> data_struct.IndexedObservations:
+    def _build_inferring_index(self) -> data_struct.IndexedObservations:
+        """Load observations from a CSV file into an index.
+        
+        Load observations from a CSV file and insert them into an index which attempts to infer
+        records requested from client code if they are not present in the index.
+        """
         inner_model = onnxruntime.InferenceSession(
             self.input()['model'].path,
             providers=['CPUExecutionProvider']
@@ -80,6 +86,7 @@ class GoodsProjectionTask(luigi.Task):
         return inferring_index
 
     def _write_output(self, target: typing.Iterable[typing.Dict]):
+        """Write CSV file from dicts representing Observations where some are inferred."""
         with self.output().open('w') as f:
             writer = csv.DictWriter(f, fieldnames=const.EXPECTED_PROJECTION_COLS)
             writer.writeheader()

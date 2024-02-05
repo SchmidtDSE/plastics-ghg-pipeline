@@ -9,6 +9,15 @@ import const
 
 
 def parse_ratio_str(target) -> typing.Optional[float]:
+    """Parse string describing a ratio of sector to overall trade or indicating that it is unknown.
+    
+    Args:
+        target: The raw value to interpret.
+    
+    Returns:
+        The ratio found from the input raw value or None if the value indicates that the ratio is
+        not known.
+    """
     ratio_str = str(target).strip().lower()
     no_ratio = ratio_str in const.RATIO_NONE_STRS
     return None if no_ratio else float(target)
@@ -470,11 +479,32 @@ class KeyingObservationIndex(IndexedObservations):
 
 
 def get_observation_included(require_response: bool, record: Observation) -> bool:
+    """Determine if an observation should be included in a dataset.
+
+    Args:
+        require_response: Flag indicating if known ratios are required. True if the ratio of sector
+            to overall trade needs to be known for the observation to be in the dataset and False if
+            it is not required.
+        record: The record to consider.
+
+    Returns:
+        True if the record should be included in the dataset and false otherwise.
+    """
     return (not require_response) or (record.get_ratio() is not None)
 
 
 def build_index_from_file(path: str, require_response: bool = False) -> IndexedObservations:
-    """Build an observation index """
+    """Build an indexed dataset of observations.
+
+    Args:
+        path: The location of the CSV file from which the index should be constructed.
+        require_response: Flag indicating if known ratios are required. True if the ratio of sector
+            to overall trade needs to be known for the observation to be in the dataset and False if
+            it is not required. Defaults to false.
+
+    Returns:
+        Observations found in the CSV file indexed into an IndexedObservations structure.
+    """
     ret_index = KeyingObservationIndex()
 
     with open(path) as f:
