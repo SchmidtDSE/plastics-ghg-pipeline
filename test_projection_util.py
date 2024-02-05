@@ -8,7 +8,7 @@ class TestModel(projection_util.Predictor):
 
     def __init__(self, value: float):
         self._value = value
-    
+
     def predict(self, input_change: data_struct.Change) -> float:
         return self._value
 
@@ -20,7 +20,7 @@ class ProjectionUtilTests(unittest.TestCase):
         self._index.add(2023, 'China', 'Transportation', data_struct.Observation(1, 2, 3))
         self._index.add(2024, 'China', 'Transportation', data_struct.Observation(4, 5, 6))
         self._index.add(2025, 'China', 'Transportation', data_struct.Observation(None, 8, 9))
-        
+
         self._decorated_index = projection_util.InferringIndexedObservationsDecorator(
             self._index,
             TestModel(7)
