@@ -3,6 +3,7 @@
 License: BSD
 """
 import csv
+import itertools
 import os
 import typing
 
@@ -14,7 +15,12 @@ import prepare
 
 
 class PreprocessDataTask(luigi.Task):
-    """Preprocess data including converting raw data to changes between pairs of years."""
+    """Preprocess data for use in machine learning training.
+
+    Preprocess data including converting raw data to changes between pairs of years as required for
+    machine learning, filtering out instances for which actual ratios are not known as they are not
+    usable for training or evaluation (to be inferred in later projection task).
+    """
 
     def requires(self):
         """Require data to preprocess."""
@@ -42,43 +48,28 @@ class PreprocessDataTask(luigi.Task):
         """Output preprocessed data."""
         return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'preprocessed.csv'))
 
-    def _build_index(self) -> data_struct.ObservationIndex:
+    def _build_index(self) -> data_struct.IndexedObservations:
         """Create an index over the raw data file."""
-        ret_index = data_struct.ObservationIndex()
+        return data_struct.build_index_from_file(self.input().path, require_response=True)
 
-        with self.input().open('r') as f:
-            records_raw = csv.DictReader(f)
-
-            for record_raw in records_raw:
-                record = data_struct.Observation.from_dict(record_raw)
-                ret_index.add(
-                    int(record_raw['year']),
-                    str(record_raw['region']),
-                    str(record_raw['sector']),
-                    record
-                )
-
-        return ret_index
-
-    def _build_tasks(self, index: data_struct.ObservationIndex) -> typing.Iterable[typing.Dict]:
+    def _build_tasks(self, index: data_struct.IndexedObservations) -> typing.Iterable[typing.Dict]:
         """Build placeholders for the changes that need to be calculated."""
-        tasks = []
+        years = index.get_years()
+        year_delta = filter(lambda x: x != 0, range(-5, 6))
+        regions = index.get_regions()
+        sectors = index.get_sectors()
 
-        for base_year in index.get_years():
-            for year_delta in range(-5, 6):
-                for region in index.get_regions():
-                    for sector in index.get_sectors():
-                        tasks.append({
-                            'baseYear': base_year,
-                            'region': region,
-                            'sector': sector,
-                            'yearDelta': year_delta
-                        })
+        tasks_tuple = itertools.product(years, year_delta, regions, sectors)
+        tasks = map(lambda x: {
+            'baseYear': x[0],
+            'yearDelta': x[1],
+            'region': x[2],
+            'sector': x[3]
+        }, tasks_tuple)
 
-        tasks_non_zero = filter(lambda x: x['yearDelta'] != 0, tasks)
         tasks_with_displaced_year = map(
             lambda x: (x['baseYear'] + x['yearDelta'], x),  # type: ignore
-            tasks_non_zero
+            tasks
         )
         tasks_with_included_year = filter(
             lambda x: index.has_year(x[0]),

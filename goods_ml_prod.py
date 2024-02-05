@@ -33,7 +33,7 @@ class TraditionalValidateModelTask(ml_util.PrechosenModelTrainTask):
 
     def output(self):
         """Output preprocessed data."""
-        return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'traditional_test.json'))
+        return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'traditional_test.txt'))
 
     def _choose_set(self, target: data_struct.Change) -> str:
         """Perform simple random split."""
@@ -57,7 +57,7 @@ class TemporalValidateModelTask(ml_util.PrechosenModelTrainTask):
 
     def output(self):
         """Output preprocessed data."""
-        return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'out_sample_test.csv'))
+        return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'out_sample_test.txt'))
 
     def _choose_set(self, target: data_struct.Change) -> str:
         """Perform split by time."""
@@ -90,8 +90,11 @@ class TrainProdModelTask(ml_util.PrechosenModelTrainTask):
 
         with open(self.output().path, 'wb') as f:
             train_row = training_data[0].to_vector()
-            train_row_numpy = numpy.array(train_row)  # Allows onnx type sniffing
-            model_onnx = skl2onnx.to_onnx(trained_model.get_model(), train_row_numpy)
+
+            # Set onnx type
+            train_array = numpy.array(train_row).astype(numpy.float32).reshape(1, len(train_row))
+
+            model_onnx = skl2onnx.to_onnx(trained_model.get_model(), train_array)
             f.write(model_onnx.SerializeToString())
 
     def output(self):

@@ -2,6 +2,7 @@
 
 License: BSD
 """
+MIN_YEAR = 2005
 
 REGIONS = [
     'China',
@@ -74,3 +75,16 @@ EXPECTED_SWEEP_COLS = [
     'validationMae',
     'testMae'
 ]
+
+NUM_YEARS_INFERENCE_WINDOW = 5
+
+EXPECTED_PROJECTION_COLS = [
+    'year',
+    'region',
+    'sector',
+    'ratioSector',
+    'gdp',
+    'population'
+]
+
+RATIO_NONE_STRS = ['', 'none']
