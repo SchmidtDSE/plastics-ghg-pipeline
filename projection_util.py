@@ -97,11 +97,11 @@ class InferringIndexedObservationsDecorator(data_struct.IndexedObservations):
             return None
 
         if add_to_cache:
-            new_obs = self._add_inference_to_cache(  # type: ignore
+            new_obs = self._add_inference_to_cache(
                 year,
                 region,
                 sector,
-                after_ratio
+                after_ratio  # type: ignore
             )
         else:
             new_obs = data_struct.Observation(
