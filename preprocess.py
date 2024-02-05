@@ -16,7 +16,7 @@ import prepare
 
 class PreprocessDataTask(luigi.Task):
     """Preprocess data for use in machine learning training.
-    
+
     Preprocess data including converting raw data to changes between pairs of years as required for
     machine learning, filtering out instances for which actual ratios are not known as they are not
     usable for training or evaluation (to be inferred in later projection task).
