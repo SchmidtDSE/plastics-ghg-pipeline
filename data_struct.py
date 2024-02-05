@@ -10,10 +10,10 @@ import const
 
 def parse_ratio_str(target) -> typing.Optional[float]:
     """Parse string describing a ratio of sector to overall trade or indicating that it is unknown.
-    
+
     Args:
         target: The raw value to interpret.
-    
+
     Returns:
         The ratio found from the input raw value or None if the value indicates that the ratio is
         not known.

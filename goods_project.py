@@ -72,7 +72,7 @@ class GoodsProjectionTask(luigi.Task):
 
     def _build_inferring_index(self) -> data_struct.IndexedObservations:
         """Load observations from a CSV file into an index.
-        
+
         Load observations from a CSV file and insert them into an index which attempts to infer
         records requested from client code if they are not present in the index.
         """
