@@ -25,7 +25,7 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
 
     def get_record(self, year: int, region: str, sector: str) -> OBSERVATION_MAYBE:
         """Normalize a record when returning it.
-        
+
         Args:
             year: The year like 2024 for which a record is desired.
             region: The region like "NAFTA" for which a record is desired.
@@ -85,7 +85,7 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
             target: The records to check.
 
         Returns:
-            The target iterator but with invalid or missing records removed.        
+            The target iterator but with invalid or missing records removed.
         """
         return filter(lambda x: x is not None, target)  # type: ignore
 

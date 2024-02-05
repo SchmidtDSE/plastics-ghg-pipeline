@@ -102,7 +102,7 @@ class DecoratedIndexedObservationsTask(luigi.Task):
 
     def _get_require_response(self) -> bool:
         """Determine if "incomplete" records are allowed.
-        
+
         Returns:
             True if the index created from observations on disk should include those without sector
             to overall trade ratios or false if those ratios are required.
