@@ -427,7 +427,7 @@ class ModelTrainTask(luigi.Task):
 
             # Cannot use records with unknown ratios for training or eval
             changes_allowed = filter(lambda x: x.has_response(), changes)
-            
+
             assigned = map(lambda x: {self._choose_set(x): [x]}, changes_allowed)
             grouped = functools.reduce(lambda a, b: {
                 'train': a.get('train', []) + b.get('train', []),
