@@ -96,7 +96,19 @@ class InferringIndexedObservationsDecorator(data_struct.IndexedObservations):
         except statistics.StatisticsError:  # Encountered if empty or invalid value, for mypy
             return None
 
-        new_obs = self._add_inference_to_cache(year, region, sector, after_ratio)  # type: ignore
+        if add_to_cache:
+            new_obs = self._add_inference_to_cache(  # type: ignore
+                year,
+                region,
+                sector,
+                after_ratio
+            )
+        else:
+            new_obs = data_struct.Observation(
+                after_ratio,
+                cached.get_gdp(),
+                cached.get_population()
+            )
 
         return new_obs
 
