@@ -17,10 +17,10 @@ import projection_util
 
 
 class GoodsProjectionTask(decorator_util.DecoratedIndexedObservationsTask):
-    """Project data without normalization."""
+    """Project data without normalization for debugging."""
 
     def requires(self):
-        """Require data to preprocess."""
+        """Require data and model to project."""
         return {
             'data': prepare.CheckTradeDataFileTask(),
             'model': goods_ml_prod.TrainProdModelTask()
@@ -45,10 +45,10 @@ class GoodsProjectionTask(decorator_util.DecoratedIndexedObservationsTask):
 
 
 class GoodsNormalizationTask(decorator_util.DecoratedIndexedObservationsTask):
-    """Normalize projected data."""
+    """Normalize projected data for debugging."""
 
     def requires(self):
-        """Require data to preprocess."""
+        """Require data and to normalize."""
         return {
             'data': GoodsProjectionTask()
         }
@@ -63,3 +63,33 @@ class GoodsNormalizationTask(decorator_util.DecoratedIndexedObservationsTask):
 
     def _get_require_response(self) -> bool:
         return True
+
+
+class GoodsProjectAndNormalizeTask(decorator_util.DecoratedIndexedObservationsTask):
+
+    def requires(self):
+        """Require data and model to project."""
+        return {
+            'data': prepare.CheckTradeDataFileTask(),
+            'model': goods_ml_prod.TrainProdModelTask()
+        }
+
+    def output(self):
+        """Output preprocessed data."""
+        return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'projected_and_normalized.csv'))
+
+    def _add_decorator(self,
+        index: data_struct.IndexedObservations) -> data_struct.IndexedObservations:
+        inner_model = onnxruntime.InferenceSession(
+            self.input()['model'].path,
+            providers=['CPUExecutionProvider']
+        )
+        model = projection_util.OnnxPredictor(inner_model)
+        inferring_index = projection_util.InferringIndexedObservationsDecorator(index, model)
+        normalizing_index = normalization_util.NormalizingIndexedObservationsDecorator(
+            inferring_index
+        )
+        return normalizing_index
+
+    def _get_require_response(self) -> bool:
+        return False
