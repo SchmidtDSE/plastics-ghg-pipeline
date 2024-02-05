@@ -2,6 +2,7 @@
 
 License: BSD
 """
+import functools
 import typing
 
 import const
@@ -10,6 +11,25 @@ import data_struct
 OBSERVATION_MAYBE = typing.Optional[data_struct.Observation]
 OBSERVATIONS = typing.Iterable[data_struct.Observation]
 OBSERVATIONS_MAYBE = typing.Iterable[typing.Optional[data_struct.Observation]]
+
+
+class RatioReduceRecord:
+
+    def __init__(self, invalid: float, valid: float):
+        self._invalid = invalid
+        self._valid = valid
+
+    def get_invalid(self) -> float:
+        return self._invalid
+
+    def get_valid(self) -> float:
+        return self._valid
+
+    def combine(self, other: 'RatioReduceRecord') -> 'RatioReduceRecord':
+        return RatioReduceRecord(
+            self.get_invalid() + other.get_invalid(),
+            self.get_valid() + other.get_valid()
+        )
 
 
 class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
@@ -99,5 +119,16 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
             The sum of ratios found in target.
         """
         all_ratios_maybe = map(lambda x: x.get_ratio(), target)
-        all_ratios = filter(lambda x: x is not None, all_ratios_maybe)
-        return sum(all_ratios)  # type: ignore
+        all_ratios_described = map(lambda x: RatioReduceRecord(
+            1 if x is None else 0,
+            0 if x is None else x
+        ), all_ratios_maybe)
+        summed = functools.reduce(
+            lambda a, b: a.combine(b),
+            all_ratios_described
+        )
+
+        if summed.get_invalid() > 0:
+            raise RuntimeError('Enountered incomplete year / region data.')
+
+        return summed.get_valid()
