@@ -1,7 +1,7 @@
 """Utilities for running tasks with IndexedObservations decorators.
 
 Utilities for running tasks with IndexedObservations decorators as in the OOP pattern for stackable
-behavior (https://refactoring.guru/design-patterns/decorator).
+behavior (https://en.wikipedia.org/wiki/Decorator_pattern).
 
 License: BSD
 """
