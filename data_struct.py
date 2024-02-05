@@ -384,9 +384,9 @@ class IndexedObservations:
             Change where 0.01 refers to 1%.
         """
         if before == 0:
-            return 0
-        else:
-            return (after - before) / before
+            raise RuntimeError('Before is zero, causing divison by zero.')
+
+        return (after - before) / before
 
 
 class KeyingObservationIndex(IndexedObservations):

@@ -93,7 +93,7 @@ class InferringIndexedObservationsDecorator(data_struct.IndexedObservations):
 
         try:
             after_ratio = statistics.mean(after_ratios)  # type: ignore
-        except statistics.StatisticsError:  # Encountered if empty or invalid value
+        except statistics.StatisticsError:  # Encountered if empty or invalid value, for mypy
             return None
 
         new_obs = self._add_inference_to_cache(year, region, sector, after_ratio)  # type: ignore
