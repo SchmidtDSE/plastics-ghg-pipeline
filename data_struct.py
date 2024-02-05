@@ -8,6 +8,12 @@ import typing
 import const
 
 
+def parse_ratio_str(target) -> typing.Optional[float]:
+    ratio_str = str(target).strip().lower()
+    no_ratio = ratio_str in const.RATIO_NONE_STRS
+    return None if no_ratio else float(target)
+
+
 class Observation:
     """An individual observation from the dataset of net trade."""
 
@@ -67,10 +73,8 @@ class Observation:
         Returns:
             Parsed version of this record.
         """
-        ratio_str = str(target['ratioSector']).strip().lower()
-        no_ratio = ratio_str in ['', 'none']
         return Observation(
-            None if no_ratio else float(target['ratioSector']),
+            parse_ratio_str(target['ratioSector']),
             float(target['gdp']),
             float(target['population'])
         )
@@ -465,6 +469,10 @@ class KeyingObservationIndex(IndexedObservations):
         return '\t'.join(pieces_str).lower()
 
 
+def get_observation_included(require_response: bool, record: Observation) -> bool:
+    return (not require_response) or (record.get_ratio() is not None)
+
+
 def build_index_from_file(path: str, require_response: bool = False) -> IndexedObservations:
     """Build an observation index """
     ret_index = KeyingObservationIndex()
@@ -474,7 +482,7 @@ def build_index_from_file(path: str, require_response: bool = False) -> IndexedO
 
         for record_raw in records_raw:
             record = Observation.from_dict(record_raw)
-            included = (not require_response) or (record.get_ratio() is not None)
+            included = get_observation_included(require_response, record)
 
             if included:
                 ret_index.add(

@@ -16,6 +16,30 @@ class ObservationTests(unittest.TestCase):
         parsed = data_struct.Observation.from_dict(serialized)
         self.assertEqual(parsed.get_ratio(), 1)
 
+    def test_parse_ratio_str_blank(self):
+        self.assertIsNone(data_struct.parse_ratio_str(''))
+
+    def test_parse_ratio_str_none(self):
+        self.assertIsNone(data_struct.parse_ratio_str('None'))
+
+    def test_parse_ratio_str_valid(self):
+        self.assertAlmostEqual(data_struct.parse_ratio_str(1.23), 1.23)
+
+    def test_get_observation_included_not_required(self):
+        observation = data_struct.Observation(None, 2, 3)
+        included = data_struct.get_observation_included(False, observation)
+        self.assertTrue(included)
+
+    def test_get_observation_included_required_pass(self):
+        observation = data_struct.Observation(1, 2, 3)
+        included = data_struct.get_observation_included(True, observation)
+        self.assertTrue(included)
+
+    def test_get_observation_included_required_fail(self):
+        observation = data_struct.Observation(None, 2, 3)
+        included = data_struct.get_observation_included(True, observation)
+        self.assertFalse(included)
+
 
 class ChangeTests(unittest.TestCase):
 

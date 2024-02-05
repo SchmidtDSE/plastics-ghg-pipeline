@@ -86,3 +86,5 @@ EXPECTED_PROJECTION_COLS = [
     'gdp',
     'population'
 ]
+
+RATIO_NONE_STRS = ['', 'none']
