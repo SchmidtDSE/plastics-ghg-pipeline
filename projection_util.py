@@ -39,9 +39,9 @@ class OnnxPredictor(Predictor):
         return float(after_ratio_nest[0])
 
 
-class PredictionObservationIndexDecorator(data_struct.ObservationIndexable):
+class InferringIndexedObservationsDecorator(data_struct.IndexedObservations):
 
-    def __init__(self, inner: data_struct.ObservationIndexable, model: Predictor):
+    def __init__(self, inner: data_struct.IndexedObservations, model: Predictor):
         self._inner = inner
         self._model = model
 

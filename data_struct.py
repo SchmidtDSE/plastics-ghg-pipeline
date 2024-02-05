@@ -258,7 +258,7 @@ class Change:
         return 1 if candidate.lower() == target.lower() else 0
 
 
-class ObservationIndexable:
+class IndexedObservations:
 
     def add(self, year: int, region: str, sector: str, record: Observation):
         """Add a new record into this index, overwriting if a matching record is already present.
@@ -376,7 +376,7 @@ class ObservationIndexable:
             return (after - before) / before
 
 
-class ObservationIndex(ObservationIndexable):
+class KeyingObservationIndex(IndexedObservations):
     """Collection of indexed observations for fast lookup."""
 
     def __init__(self):
@@ -465,8 +465,9 @@ class ObservationIndex(ObservationIndexable):
         return '\t'.join(pieces_str).lower()
 
 
-def build_index_from_file(path: str, require_response: bool = False) -> ObservationIndexable:
-    ret_index = ObservationIndex()
+def build_index_from_file(path: str, require_response: bool = False) -> IndexedObservations:
+    """Build an observation index """
+    ret_index = KeyingObservationIndex()
 
     with open(path) as f:
         records_raw = csv.DictReader(f)

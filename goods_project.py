@@ -51,11 +51,11 @@ class GoodsProjectionTask(luigi.Task):
         """Output preprocessed data."""
         return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'projected.csv'))
 
-    def _build_index(self) -> data_struct.ObservationIndexable:
+    def _build_index(self) -> data_struct.IndexedObservations:
         """Create an index over the raw data file."""
         return data_struct.build_index_from_file(self.input()['data'].path, require_response=False)
 
-    def _get_observation_dict(self, index: data_struct.ObservationIndexable, year: int, region: str,
+    def _get_observation_dict(self, index: data_struct.IndexedObservations, year: int, region: str,
         sector: str) -> typing.Optional[typing.Dict]:
         observation = index.get_record(year, region, sector)
         if observation is None:
@@ -69,14 +69,14 @@ class GoodsProjectionTask(luigi.Task):
 
         return observation_dict
 
-    def _build_inferring_idex(self) -> data_struct.ObservationIndexable:
+    def _build_inferring_idex(self) -> data_struct.IndexedObservations:
         inner_model = onnxruntime.InferenceSession(
             self.input()['model'].path,
             providers=['CPUExecutionProvider']
         )
         model = projection_util.OnnxPredictor(inner_model)
         index = self._build_index()
-        inferring_index = projection_util.PredictionObservationIndexDecorator(index, model)
+        inferring_index = projection_util.InferringIndexedObservationsDecorator(index, model)
         return inferring_index
 
     def _write_output(self, target: typing.Iterable[typing.Dict]):

@@ -52,10 +52,10 @@ class ChangeTests(unittest.TestCase):
         self.assertEqual(self._change._hot_encode('a', 'A'), 1)
 
 
-class ObservationIndexTests(unittest.TestCase):
+class KeyingObservationIndexTests(unittest.TestCase):
 
     def setUp(self):
-        self._index = data_struct.ObservationIndex()
+        self._index = data_struct.KeyingObservationIndex()
         self._index.add(2023, 'China', 'Transportation', data_struct.Observation(1, 2, 3))
         self._index.add(2024, 'China', 'Transportation', data_struct.Observation(4, 5, 6))
 

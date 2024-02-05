@@ -48,11 +48,11 @@ class PreprocessDataTask(luigi.Task):
         """Output preprocessed data."""
         return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'preprocessed.csv'))
 
-    def _build_index(self) -> data_struct.ObservationIndexable:
+    def _build_index(self) -> data_struct.IndexedObservations:
         """Create an index over the raw data file."""
         return data_struct.build_index_from_file(self.input().path, require_response=True)
 
-    def _build_tasks(self, index: data_struct.ObservationIndexable) -> typing.Iterable[typing.Dict]:
+    def _build_tasks(self, index: data_struct.IndexedObservations) -> typing.Iterable[typing.Dict]:
         """Build placeholders for the changes that need to be calculated."""
         years = index.get_years()
         year_delta = filter(lambda x: x != 0, range(-5, 6))
