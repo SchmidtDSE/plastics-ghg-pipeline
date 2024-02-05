@@ -12,14 +12,29 @@ import data_struct
 
 
 class Predictor:
+    """Interface for models which can infer trade ratios."""
 
     def predict(self, input_change: data_struct.Change) -> float:
+        """Predict a ratio of sector to overall trade.
+
+        Args:
+            input_change: The change for which the after ratio needs to be predicted.
+
+        Returns:
+            Inferred value.
+        """
         raise NotImplementedError('Use implementor.')
 
 
 class OnnxPredictor(Predictor):
+    """Predictor which infers trade ratios through an onnx model."""
 
     def __init__(self, model):
+        """Create a new Onnx-backed predictor.
+
+        Args:
+            model: The onnx model to service this predictor.
+        """
         self._model = model
 
     def predict(self, input_change: data_struct.Change) -> float:
@@ -40,8 +55,15 @@ class OnnxPredictor(Predictor):
 
 
 class InferringIndexedObservationsDecorator(data_struct.IndexedObservations):
+    """Decorator for an IndexedObservations structure which infers unknown sector trade ratios."""
 
     def __init__(self, inner: data_struct.IndexedObservations, model: Predictor):
+        """Create a new decorator.
+
+        Args:
+            inner: The indexed observations structure to decorate.
+            model: The model to use to make inferences.
+        """
         self._inner = inner
         self._model = model
 
@@ -141,6 +163,19 @@ class InferringIndexedObservationsDecorator(data_struct.IndexedObservations):
 
     def _add_inference_to_cache(self, year: int, region: str, sector: str,
         ratio: float) -> data_struct.Observation:
+        """Add a new record to the decorated index.
+
+        Args:
+            year: The year like 2024 for which a record should be added into the underlying index.
+            region: The region like "China" for which a record should be added into the decorated
+                index.
+            sector: The sector like "Transportation" for which a record should be added into the
+                decorated index.
+            ratio: The ratio of sector to overall net trade.
+
+        Returns:
+            Newly added observation.
+        """
         cached = self._inner.get_record(year, region, sector)
         if cached is None:
             raise RuntimeError('Socioeconomic values not available.')
@@ -156,6 +191,16 @@ class InferringIndexedObservationsDecorator(data_struct.IndexedObservations):
         return new_observation
 
     def _query_in_range(self, year: int, region: str, sector: str) -> bool:
+        """Determine if a ratio can be inferred.
+
+        Args:
+            year: The year for which an inferrence would be required.
+            region: The region like "Row" in which inference would be required.
+            sector: The sector like "Transportation" in which inference would be required.
+
+        Returns:
+            True if inferrable and false otherwise.
+        """
         if year < const.MIN_YEAR:
             return False
 
