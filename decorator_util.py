@@ -1,3 +1,11 @@
+"""Utilities for running tasks with IndexedObservations decorators.
+
+Utilities for running tasks with IndexedObservations decorators as in the OOP pattern for stackable
+behavior (https://refactoring.guru/design-patterns/decorator).
+
+License: BSD
+"""
+
 import csv
 import itertools
 import typing
@@ -32,7 +40,11 @@ class DecoratedIndexedObservationsTask(luigi.Task):
         self._write_output(output_dict_valid)
 
     def _build_index(self) -> data_struct.IndexedObservations:
-        """Create an index over the raw data file."""
+        """Create an index over the raw data file.
+
+        Returns:
+            Index over the raw file with the decorator(s) applied.
+        """
         index = data_struct.build_index_from_file(
             self.input()['data'].path,
             require_response=self._get_require_response()
@@ -41,7 +53,18 @@ class DecoratedIndexedObservationsTask(luigi.Task):
 
     def _get_observation_dict(self, index: data_struct.IndexedObservations, year: int, region: str,
         sector: str) -> typing.Optional[typing.Dict]:
-        """Create a dictionary describing an observation from an IndexedObservations structure."""
+        """Create a dictionary describing an observation from an IndexedObservations structure.
+
+        Args:
+            index: The index from which the dictionary should be derived.
+            year: The year for which an observation dictionary is requested.
+            region: The region for which an observation is requested.
+            sector: The sector for which an observation is requested.
+
+        Returns:
+            Dictionary representation of the observation or None if the dictionary could not be
+            made.
+        """
         observation = index.get_record(year, region, sector)
         if observation is None:
             return None
@@ -55,7 +78,11 @@ class DecoratedIndexedObservationsTask(luigi.Task):
         return observation_dict
 
     def _write_output(self, target: typing.Iterable[typing.Dict]):
-        """Write CSV file from dicts representing Observations where some are inferred."""
+        """Write CSV file from dicts representing Observations where some are inferred.
+
+        Args:
+            target: The dictionaries to write.
+        """
         with self.output().open('w') as f:
             writer = csv.DictWriter(f, fieldnames=const.EXPECTED_PROJECTION_COLS)
             writer.writeheader()
@@ -63,7 +90,21 @@ class DecoratedIndexedObservationsTask(luigi.Task):
 
     def _add_decorator(self,
         index: data_struct.IndexedObservations) -> data_struct.IndexedObservations:
+        """Add the decorator(s) to the base index.
+
+        Args:
+            index: The index to decorate.
+
+        Returns:
+            The decorated index.
+        """
         raise NotImplementedError('Use implementor.')
 
     def _get_require_response(self) -> bool:
+        """Determine if "incomplete" records are allowed.
+        
+        Returns:
+            True if the index created from observations on disk should include those without sector
+            to overall trade ratios or false if those ratios are required.
+        """
         raise NotImplementedError('Use implementor.')

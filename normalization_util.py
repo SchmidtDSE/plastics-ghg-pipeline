@@ -1,3 +1,7 @@
+"""Utilities for normalizing sector to overall net trade ratios.
+
+License: BSD
+"""
 import typing
 
 import const
@@ -20,6 +24,17 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
         self._inner = inner
 
     def get_record(self, year: int, region: str, sector: str) -> OBSERVATION_MAYBE:
+        """Normalize a record when returning it.
+        
+        Args:
+            year: The year like 2024 for which a record is desired.
+            region: The region like "NAFTA" for which a record is desired.
+            sector: The sector like "Transportation" for which a record is desired.
+
+        Returns:
+            Record with normalized ratio or None if an original record was not present or did not
+            have a ratio itself.
+        """
         unnormalized = self._inner.get_record(year, region, sector)
         if unnormalized is None:
             return None
@@ -64,9 +79,25 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
         return self._inner.has_sector(target)
 
     def _filter_for_valid(self, target: OBSERVATIONS_MAYBE) -> OBSERVATIONS:
+        """Filter for only found observations.
+
+        Args:
+            target: The records to check.
+
+        Returns:
+            The target iterator but with invalid or missing records removed.        
+        """
         return filter(lambda x: x is not None, target)  # type: ignore
 
     def _get_sum_ratios(self, target: OBSERVATIONS) -> float:
+        """Get the sum of all ratios in a collection of observations.
+
+        Args:
+            target: The observations whose ratios should be summed, ignoring those without ratios.
+
+        Returns:
+            The sum of ratios found in target.
+        """
         all_ratios_maybe = map(lambda x: x.get_ratio(), target)
         all_ratios = filter(lambda x: x is not None, all_ratios_maybe)
         return sum(all_ratios)  # type: ignore

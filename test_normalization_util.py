@@ -1,3 +1,7 @@
+"""Tests for logic supporting ratio normalization.
+
+License: BSD
+"""
 import unittest
 
 import data_struct
