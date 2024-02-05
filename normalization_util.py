@@ -14,18 +14,43 @@ OBSERVATIONS_MAYBE = typing.Iterable[typing.Optional[data_struct.Observation]]
 
 
 class RatioReduceRecord:
+    """Internal data structure for reducing across potentiall incomplete sector ratios."""
 
     def __init__(self, invalid: float, valid: float):
+        """Create a new record for reduction.
+
+        Args:
+            invalid: Number of records that were incomplete.
+            valid: The summation from valid records.
+        """
         self._invalid = invalid
         self._valid = valid
 
     def get_invalid(self) -> float:
+        """Get the count of records that did not have ratios available.
+
+        Returns:
+            Count of invalid records.
+        """
         return self._invalid
 
     def get_valid(self) -> float:
+        """Get the running ratio sum from valid records.
+
+        Returns:
+            The sum of ratios from valid records.
+        """
         return self._valid
 
     def combine(self, other: 'RatioReduceRecord') -> 'RatioReduceRecord':
+        """Add two reduction records together.
+
+        Args:
+            other: The record to add to this one.
+
+        Returns:
+            Record that describes the sum of this record and the other record.
+        """
         return RatioReduceRecord(
             self.get_invalid() + other.get_invalid(),
             self.get_valid() + other.get_valid()
