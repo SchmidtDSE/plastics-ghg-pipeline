@@ -1,4 +1,4 @@
-"""Utilities for normalizing sector to overall net trade ratios.
+"""Utilities for normalizing subtype to overall net trade ratios.
 
 License: BSD
 """
@@ -14,7 +14,7 @@ OBSERVATIONS_MAYBE = typing.Iterable[typing.Optional[data_struct.Observation]]
 
 
 class RatioReduceRecord:
-    """Internal data structure for reducing across potentiall incomplete sector ratios."""
+    """Internal data structure for reducing across potentiall incomplete subtype ratios."""
 
     def __init__(self, invalid: float, valid: float):
         """Create a new record for reduction.
@@ -68,19 +68,19 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
         """
         self._inner = inner
 
-    def get_record(self, year: int, region: str, sector: str) -> OBSERVATION_MAYBE:
+    def get_record(self, year: int, region: str, subtype: str) -> OBSERVATION_MAYBE:
         """Normalize a record when returning it.
 
         Args:
             year: The year like 2024 for which a record is desired.
             region: The region like "NAFTA" for which a record is desired.
-            sector: The sector like "Transportation" for which a record is desired.
+            subtype: The subtype like "Transportation" for which a record is desired.
 
         Returns:
             Record with normalized ratio or None if an original record was not present or did not
             have a ratio itself.
         """
-        unnormalized = self._inner.get_record(year, region, sector)
+        unnormalized = self._inner.get_record(year, region, subtype)
         if unnormalized is None:
             return None
 
@@ -88,9 +88,9 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
         if unnormalized_ratio is None:
             return None
 
-        all_sectors_maybe = map(lambda x: self._inner.get_record(year, region, x), const.SECTORS)
-        all_sectors = self._filter_for_valid(all_sectors_maybe)
-        sum_ratios = self._get_sum_ratios(all_sectors)
+        all_subtypes_maybe = map(lambda x: self._inner.get_record(year, region, x), const.SUBTYPES)
+        all_subtypes = self._filter_for_valid(all_subtypes_maybe)
+        sum_ratios = self._get_sum_ratios(all_subtypes)
 
         return data_struct.Observation(
             unnormalized_ratio / sum_ratios,
@@ -98,12 +98,12 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
             unnormalized.get_population()
         )
 
-    def get_change(self, year: int, region: str, sector: str,
+    def get_change(self, year: int, region: str, subtype: str,
         years: int) -> typing.Optional[data_struct.Change]:
-        return self._inner.get_change(year, region, sector, years)
+        return self._inner.get_change(year, region, subtype, years)
 
-    def add(self, year: int, region: str, sector: str, record: data_struct.Observation):
-        self._inner.add(year, region, sector, record)
+    def add(self, year: int, region: str, subtype: str, record: data_struct.Observation):
+        self._inner.add(year, region, subtype, record)
 
     def get_years(self) -> typing.Iterable[int]:
         return self._inner.get_years()
@@ -117,11 +117,11 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
     def has_region(self, target: str) -> bool:
         return self._inner.has_region(target)
 
-    def get_sectors(self) -> typing.Iterable[str]:
-        return self._inner.get_sectors()
+    def get_subtypes(self) -> typing.Iterable[str]:
+        return self._inner.get_subtypes()
 
-    def has_sector(self, target: str) -> bool:
-        return self._inner.has_sector(target)
+    def has_subtype(self, target: str) -> bool:
+        return self._inner.has_subtype(target)
 
     def _filter_for_valid(self, target: OBSERVATIONS_MAYBE) -> OBSERVATIONS:
         """Filter for only found observations.

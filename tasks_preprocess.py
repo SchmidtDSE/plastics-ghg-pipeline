@@ -35,7 +35,7 @@ class PreprocessDataTask(luigi.Task):
             lambda x: indexed_records.get_change(
                 x['baseYear'],
                 x['region'],
-                x['sector'],
+                x['subtype'],
                 x['yearDelta']
             ),
             tasks
@@ -57,14 +57,14 @@ class PreprocessDataTask(luigi.Task):
         years = index.get_years()
         year_delta = filter(lambda x: x != 0, range(-5, 6))
         regions = index.get_regions()
-        sectors = index.get_sectors()
+        subtypes = index.get_subtypes()
 
-        tasks_tuple = itertools.product(years, year_delta, regions, sectors)
+        tasks_tuple = itertools.product(years, year_delta, regions, subtypes)
         tasks = map(lambda x: {
             'baseYear': x[0],
             'yearDelta': x[1],
             'region': x[2],
-            'sector': x[3]
+            'subtype': x[3]
         }, tasks_tuple)
 
         tasks_with_displaced_year = map(

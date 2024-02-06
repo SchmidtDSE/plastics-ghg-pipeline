@@ -59,7 +59,7 @@ class ChangeTests(unittest.TestCase):
         serialized = self._change.to_dict()
         deserialized = data_struct.Change.from_dict(serialized)
         self.assertEqual(deserialized.get_region(), 'nafta')
-        self.assertEqual(deserialized.get_sector(), 'transportation')
+        self.assertEqual(deserialized.get_subtype(), 'transportation')
         self.assertEqual(deserialized.get_year(), 2014)
         self.assertEqual(deserialized.get_years(), -1)
         self.assertAlmostEqual(deserialized.get_gdp_change(), 0.01)
@@ -106,14 +106,14 @@ class KeyingObservationIndexTests(unittest.TestCase):
         self.assertTrue(2023 in self._index.get_years())
         self.assertTrue(2024 in self._index.get_years())
         self.assertTrue('china' in self._index.get_regions())
-        self.assertTrue('transportation' in self._index.get_sectors())
+        self.assertTrue('transportation' in self._index.get_subtypes())
 
     def test_has_members_found(self):
         self.assertTrue(self._index.has_year(2023))
         self.assertTrue(self._index.has_region('china'))
-        self.assertTrue(self._index.has_sector('transportation'))
+        self.assertTrue(self._index.has_subtype('transportation'))
 
     def test_has_members_not_found(self):
         self.assertFalse(self._index.has_year(2022))
         self.assertFalse(self._index.has_region('other'))
-        self.assertFalse(self._index.has_sector('other'))
+        self.assertFalse(self._index.has_subtype('other'))

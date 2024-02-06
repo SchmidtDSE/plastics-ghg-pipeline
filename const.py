@@ -22,9 +22,23 @@ SECTORS = [
     'Transportation'
 ]
 
+POLYMERS = [
+    '60% LDPE, 40% HDPE',
+    'PP',
+    'PS',
+    'PVC',
+    '100% OTP',
+    '50% OTP, 50% OTS',
+    'PET'
+    '100% OTP',
+    'PUR'
+]
+
+SUBTYPES = SECTORS + POLYMERS
+
 CHANGE_COLS = [
     'region',
-    'sector',
+    'subtype',
     'year',
     'years',
     'gdpChange',
@@ -35,7 +49,7 @@ CHANGE_COLS = [
 
 INPUTS_REGIONS = ['region_%s' % x for x in REGIONS]
 
-INPUTS_SECTORS = ['sector_%s' % x for x in SECTORS]
+INPUTS_SECTORS = ['subtype_%s' % x for x in SECTORS]
 
 INPUTS = [
     'years',
@@ -81,8 +95,8 @@ NUM_YEARS_INFERENCE_WINDOW = 5
 EXPECTED_PROJECTION_COLS = [
     'year',
     'region',
-    'sector',
-    'ratioSector',
+    'subtype',
+    'ratioSubtype',
     'gdp',
     'population'
 ]
