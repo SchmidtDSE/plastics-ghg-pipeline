@@ -2,6 +2,16 @@
 
 License: BSD
 """
+EXPECTED_RAW_DATA_COLS = [
+    'year',
+    'region',
+    'series',
+    'subtype',
+    'ratioSubtype',
+    'gdp',
+    'population'
+]
+
 MIN_YEAR = 2005
 
 REGIONS = [
@@ -105,3 +115,5 @@ EXPECTED_PROJECTION_COLS = [
 ]
 
 RATIO_NONE_STRS = ['', 'none']
+
+TRADE_INPUTS_URL = 'https://global-plastics-tool.org/data/trade_inputs.csv'

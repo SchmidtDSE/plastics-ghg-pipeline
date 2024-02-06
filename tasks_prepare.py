@@ -2,10 +2,12 @@
 
 License: BSD
 """
+import codecs
 import json
 import os
 
 import luigi  # type: ignore
+import requests
 
 import const
 import ml_util
@@ -62,8 +64,30 @@ class CheckConfigFileTask(luigi.Task):
         return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'task_checked.json'))
 
 
-class CheckTradeDataFileTask(CheckFileTask):
-    """Check that the raw data file is present."""
+class GetTradeDataFile(CheckFileTask):
+    """Task to download and check the trade data file."""
 
-    def get_path(self) -> str:
-        return os.path.join(const.DEPLOY_DIR, const.TRADE_FRAME_NAME)
+    def run(self):
+        """Download and check file."""
+        response = requests.get(const.TRADE_INPUTS_URL, stream=True)
+        line_iterator = response.iter_lines()
+        reader = codecs.iterdecode(
+            csv.DictReader(line_iterator), 
+            quotechar='"',
+            delimiter=','
+        )
+
+        def validate_row(target):
+            
+
+        with self.output().open('w') as f:
+            writer = csv.DictWriter(f, fieldnames=const.EXPECTED_RAW_DATA_COLS)
+            writer.writeheader()
+            writer.writerows(validated_rows)
+
+        response.close()
+
+    def output(self) -> str:
+        """Write to the deploy directory."""
+        full_path = os.path.join(const.DEPLOY_DIR, const.TRADE_FRAME_NAME)
+        return luigi.LocalTarget(full_path)
