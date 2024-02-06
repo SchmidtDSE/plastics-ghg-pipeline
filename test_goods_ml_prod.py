@@ -1,4 +1,4 @@
-"""Tests for production good trade model generation.
+"""Tests for production trade model generation.
 
 License: BSD
 """
@@ -8,7 +8,7 @@ import data_struct
 import tasks_ml_prod
 
 
-class GoodsMlProdTests(unittest.TestCase):
+class MlProdTests(unittest.TestCase):
 
     def setUp(self):
         self._example_change = data_struct.Change(

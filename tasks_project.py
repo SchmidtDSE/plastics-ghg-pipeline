@@ -1,4 +1,4 @@
-"""Logic for longitudinally projecting goods trade ratios.
+"""Logic for longitudinally projecting trade ratios.
 
 License: BSD
 """
@@ -17,7 +17,7 @@ import tasks_prepare
 import projection_util
 
 
-class GoodsProjectionTask(luigi.Task):
+class ProjectionTask(luigi.Task):
     """Project data without normalization."""
 
     def requires(self):
