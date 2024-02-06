@@ -1,7 +1,7 @@
 import unittest
 
 import data_struct
-import goods_project
+import tasks_project
 
 
 class GoodsProjectTests(unittest.TestCase):
@@ -9,7 +9,7 @@ class GoodsProjectTests(unittest.TestCase):
     def setUp(self):
         self._index = data_struct.KeyingObservationIndex()
         self._index.add(2023, 'NAFTA', 'Transportation', data_struct.Observation(1, 2, 3))
-        self._task = goods_project.GoodsProjectionTask()
+        self._task = tasks_project.GoodsProjectionTask()
 
     def test_get_observation_dict_none(self):
         serialized = self._task._get_observation_dict(self._index, 2024, 'NAFTA', 'Transportation')

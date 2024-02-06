@@ -5,7 +5,7 @@ License: BSD
 import unittest
 
 import data_struct
-import goods_ml_prod
+import tasks_ml_prod
 
 
 class GoodsMlProdTests(unittest.TestCase):
@@ -23,11 +23,11 @@ class GoodsMlProdTests(unittest.TestCase):
         )
 
     def test_traditional_choose_set(self):
-        task = goods_ml_prod.TraditionalValidateModelTask()
+        task = tasks_ml_prod.TraditionalValidateModelTask()
         self.assertTrue(task._choose_set(self._example_change) in ['train', 'test'])
 
     def test_temporal_choose_set(self):
-        task = goods_ml_prod.TemporalValidateModelTask()
+        task = tasks_ml_prod.TemporalValidateModelTask()
 
         before = data_struct.Change(
             'NAFTA',
@@ -55,5 +55,5 @@ class GoodsMlProdTests(unittest.TestCase):
         self.assertEqual(task._choose_set(after), 'test')
 
     def test_production_choose_set(self):
-        task = goods_ml_prod.TrainProdModelTask()
+        task = tasks_ml_prod.TrainProdModelTask()
         self.assertEqual(task._choose_set(self._example_change), 'train')

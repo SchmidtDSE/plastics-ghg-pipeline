@@ -18,8 +18,8 @@ import sklearn.tree  # type: ignore
 
 import const
 import data_struct
-import prepare
-import preprocess
+import tasks_prepare
+import tasks_preprocess
 
 OPT_FLOAT = typing.Optional[float]
 OPT_INT = typing.Optional[int]
@@ -379,7 +379,7 @@ class ModelTrainTask(luigi.Task):
             Dictionary with named prerequisites.
         """
         return {
-            'data': preprocess.PreprocessDataTask()
+            'data': tasks_preprocess.PreprocessDataTask()
         }
 
     def _train_model(self, model, data: typing.Optional[SPLIT_DATASETS] = None) -> TrainedModel:
@@ -452,8 +452,8 @@ class PrechosenModelTrainTask(ModelTrainTask):
     def requires(self):
         """Require data and config."""
         return {
-            'data': preprocess.PreprocessDataTask(),
-            'config': prepare.CheckConfigFileTask()
+            'data': tasks_preprocess.PreprocessDataTask(),
+            'config': tasks_prepare.CheckConfigFileTask()
         }
 
     def _train_model(self, model=None,

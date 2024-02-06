@@ -12,8 +12,8 @@ import onnxruntime  # type: ignore
 
 import const
 import data_struct
-import goods_ml_prod
-import prepare
+import tasks_ml_prod
+import tasks_prepare
 import projection_util
 
 
@@ -23,8 +23,8 @@ class GoodsProjectionTask(luigi.Task):
     def requires(self):
         """Require data to preprocess."""
         return {
-            'data': prepare.CheckTradeDataFileTask(),
-            'model': goods_ml_prod.TrainProdModelTask()
+            'data': tasks_prepare.CheckTradeDataFileTask(),
+            'model': tasks_ml_prod.TrainProdModelTask()
         }
 
     def run(self):
