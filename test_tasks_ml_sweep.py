@@ -6,7 +6,7 @@ import functools
 import unittest
 
 import data_struct
-import goods_ml_sweep
+import tasks_ml_sweep
 import ml_util
 
 
@@ -23,7 +23,7 @@ class SweepTaskTests(unittest.TestCase):
         )
 
     def test_get_with(self):
-        task = goods_ml_sweep.SweepTask(self._definition)
+        task = tasks_ml_sweep.SweepTask(self._definition)
         task = task.get_with_model(self._model)
         task = task.get_with_trained_model(self._trained_model)
 
@@ -32,7 +32,7 @@ class SweepTaskTests(unittest.TestCase):
         self.assertIsNotNone(task.get_trained_model())
 
     def test_get_dict(self):
-        task = goods_ml_sweep.SweepTask(
+        task = tasks_ml_sweep.SweepTask(
             self._definition,
             trained_model=self._trained_model
         )
@@ -43,7 +43,7 @@ class SweepTaskTests(unittest.TestCase):
 class ModelSweepTaskTests(unittest.TestCase):
 
     def setUp(self):
-        self._task = goods_ml_sweep.ModelSweepTask()
+        self._task = tasks_ml_sweep.ModelSweepTask()
 
     def test_choose_set(self):
         change = data_struct.Change(

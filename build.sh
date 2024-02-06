@@ -2,4 +2,4 @@
 #
 # License: BSD, see LICENSE.md
 
-python -m luigi --module goods_project GoodsProjectAndNormalizeTask --local-scheduler --workers 1
+python -m luigi --module tasks_project ProjectionTask --local-scheduler --workers 1

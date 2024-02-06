@@ -1,4 +1,4 @@
-"""Logic for longitudinally projecting goods trade ratios.
+"""Logic for longitudinally projecting trade ratios.
 
 License: BSD
 """
@@ -10,20 +10,20 @@ import onnxruntime  # type: ignore
 import const
 import data_struct
 import decorator_util
-import goods_ml_prod
 import normalization_util
-import prepare
 import projection_util
+import tasks_ml_prod
+import tasks_prepare
 
 
-class GoodsProjectionTask(decorator_util.DecoratedIndexedObservationsTask):
+class ProjectionTask(decorator_util.DecoratedIndexedObservationsTask):
     """Project data without normalization for debugging."""
 
     def requires(self):
         """Require data and model to project."""
         return {
-            'data': prepare.CheckTradeDataFileTask(),
-            'model': goods_ml_prod.TrainProdModelTask()
+            'data': tasks_prepare.CheckTradeDataFileTask(),
+            'model': tasks_ml_prod.TrainProdModelTask()
         }
 
     def output(self):
@@ -46,13 +46,13 @@ class GoodsProjectionTask(decorator_util.DecoratedIndexedObservationsTask):
         return False
 
 
-class GoodsNormalizationTask(decorator_util.DecoratedIndexedObservationsTask):
+class NormalizationTask(decorator_util.DecoratedIndexedObservationsTask):
     """Normalize projected data for debugging."""
 
     def requires(self):
         """Require data and to normalize."""
         return {
-            'data': GoodsProjectionTask()
+            'data': ProjectionTask()
         }
 
     def output(self):
@@ -69,7 +69,7 @@ class GoodsNormalizationTask(decorator_util.DecoratedIndexedObservationsTask):
         return True
 
 
-class GoodsProjectAndNormalizeTask(decorator_util.DecoratedIndexedObservationsTask):
+class ProjectAndNormalizeTask(decorator_util.DecoratedIndexedObservationsTask):
     """Production trask which both predicts unknown trade ratios and normalizes them.
 
     Production trask which both predicts unknown trade ratios and normalizes them before writing the
@@ -79,8 +79,8 @@ class GoodsProjectAndNormalizeTask(decorator_util.DecoratedIndexedObservationsTa
     def requires(self):
         """Require data and model to project."""
         return {
-            'data': prepare.CheckTradeDataFileTask(),
-            'model': goods_ml_prod.TrainProdModelTask()
+            'data': tasks_prepare.CheckTradeDataFileTask(),
+            'model': tasks_ml_prod.TrainProdModelTask()
         }
 
     def output(self):

@@ -11,7 +11,7 @@ import luigi  # type: ignore
 
 import data_struct
 import const
-import prepare
+import tasks_prepare
 
 
 class PreprocessDataTask(luigi.Task):
@@ -24,7 +24,7 @@ class PreprocessDataTask(luigi.Task):
 
     def requires(self):
         """Require data to preprocess."""
-        return prepare.CheckTradeDataFileTask()
+        return tasks_prepare.CheckTradeDataFileTask()
 
     def run(self):
         """Preprocess data."""

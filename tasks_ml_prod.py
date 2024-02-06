@@ -12,8 +12,8 @@ import skl2onnx  # type: ignore
 import const
 import data_struct
 import ml_util
-import prepare
-import preprocess
+import tasks_prepare
+import tasks_preprocess
 
 
 class TraditionalValidateModelTask(ml_util.PrechosenModelTrainTask):
@@ -77,8 +77,8 @@ class TrainProdModelTask(ml_util.PrechosenModelTrainTask):
     def requires(self):
         """Require validation in addition to data and config."""
         return {
-            'data': preprocess.PreprocessDataTask(),
-            'config': prepare.CheckConfigFileTask(),
+            'data': tasks_preprocess.PreprocessDataTask(),
+            'config': tasks_prepare.CheckConfigFileTask(),
             'traditionalValidation': TraditionalValidateModelTask(),
             'temporalValidation': TemporalValidateModelTask()
         }
