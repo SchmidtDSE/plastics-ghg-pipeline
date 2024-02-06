@@ -21,7 +21,7 @@ A containerized Docker environment is available for execution:
  - Build the environment: `docker build -t dse/ghg_pipeline .`
  - Run the container: `docker run -it --name pipeline_run dse/ghg_pipeline bash build.sh`
 
-This will tasks_prepare outputs required for the [front-end tool](https://github.com/SchmidtDSE/plastics-prototype).
+This will prepare outputs required for the [front-end tool](https://github.com/SchmidtDSE/plastics-prototype).
 
 ### Manual Environment
 In addition to the Docker container, a manual environment can be established simply by running `pip install -r requirements.txt`. This assumes that sqlite3 is installed. Afterwards, simply run `bash build.sh`.
