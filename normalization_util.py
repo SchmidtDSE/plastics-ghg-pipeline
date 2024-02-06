@@ -80,6 +80,7 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
             Record with normalized ratio or None if an original record was not present or did not
             have a ratio itself.
         """
+        # Ensure there is a record which can be normalized.
         unnormalized = self._inner.get_record(year, region, subtype)
         if unnormalized is None:
             return None
@@ -88,10 +89,17 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
         if unnormalized_ratio is None:
             return None
 
-        all_subtypes_maybe = map(lambda x: self._inner.get_record(year, region, x), const.SUBTYPES)
+        # Only normalize within the same series (goods or resin) as modeling predicts net goods and
+        # resin separately.
+        is_goods = subtype in const.SECTORS
+        target_subtypes = const.SECTORS if is_goods else const.POLYMERS
+
+        # Sum up the other ratios within the same series.
+        all_subtypes_maybe = map(lambda x: self._inner.get_record(year, region, x), target_subtypes)
         all_subtypes = self._filter_for_valid(all_subtypes_maybe)
         sum_ratios = self._get_sum_ratios(all_subtypes)
 
+        # Return normalized value
         return data_struct.Observation(
             unnormalized_ratio / sum_ratios,
             unnormalized.get_gdp(),
