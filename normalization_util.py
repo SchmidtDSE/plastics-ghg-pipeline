@@ -142,7 +142,20 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
         Returns:
             The sum of ratios found in target.
         """
-        all_ratios_maybe = map(lambda x: None if x is None else x.get_ratio(), target)
+
+        def get_ratio_if_available(target: OBSERVATION_MAYBE) -> typing.Optional[float]:
+            """If an observation is present, try getting a ratio from it. Otherwise return None.
+            
+            Args:
+                target: The observation, if given, from which the ratio should be returned.
+
+            Returns:
+                None if either the given observation was None or did not have a ratio available.
+                Othewise, the ratio from target.
+            """
+            return None if target is None else target.get_ratio()
+
+        all_ratios_maybe = map(get_ratio_if_available, target)
         all_ratios_described = map(lambda x: RatioReduceRecord(
             1 if x is None else 0,
             0 if x is None else x
