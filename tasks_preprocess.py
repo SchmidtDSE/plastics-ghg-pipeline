@@ -40,7 +40,12 @@ class PreprocessDataTask(luigi.Task):
             ),
             tasks
         )
-        output_changes_dict = map(lambda x: x.to_dict(), output_changes)
+
+        # Resin and goods trade don't have the same years of actuals data so need to ignore changes
+        # in the non-overlapping timeseries.
+        output_changes_valid = filter(lambda x: x is not None, output_changes)
+
+        output_changes_dict = map(lambda x: x.to_dict(), output_changes_valid)
 
         self._write_changes(output_changes_dict)
 

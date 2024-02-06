@@ -76,8 +76,9 @@ SUPPORTED_ALGORITHMS = [
     'adaboost'
 ]
 
-ALLOWED_TEST_ERROR = 0.1
-ALLOWED_OUT_SAMPLE_ERROR = 0.1
+# Use ceiling that covers both resin (0.3) and goods trade (0.1)
+ALLOWED_TEST_ERROR = 0.3
+ALLOWED_OUT_SAMPLE_ERROR = 0.3
 
 EXPECTED_SWEEP_COLS = [
     'algorithm',
