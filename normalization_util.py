@@ -96,7 +96,6 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
 
         # Sum up the other ratios within the same series.
         related_subtypes_maybe = map(lambda x: self._inner.get_record(year, region, x), target_subtypes)
-        related_subtypes = self._filter_for_valid(related_subtypes_maybe)
         sum_ratios = self._get_sum_ratios(related_subtypes)
 
         # Return normalized value
@@ -130,17 +129,6 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
 
     def has_subtype(self, target: str) -> bool:
         return self._inner.has_subtype(target)
-
-    def _filter_for_valid(self, target: OBSERVATIONS_MAYBE) -> OBSERVATIONS:
-        """Filter for only found observations.
-
-        Args:
-            target: The records to check.
-
-        Returns:
-            The target iterator but with invalid or missing records removed.
-        """
-        return filter(lambda x: x is not None, target)  # type: ignore
 
     def _get_sum_ratios(self, target: OBSERVATIONS) -> float:
         """Get the sum of all ratios in a collection of observations.
