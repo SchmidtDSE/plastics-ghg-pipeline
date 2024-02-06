@@ -12,8 +12,14 @@ class NormalizingIndexedObservationsDecoratorTests(unittest.TestCase):
 
     def setUp(self):
         self._index = data_struct.KeyingObservationIndex()
-        self._index.add(2023, 'NAFTA', 'Transportation', data_struct.Observation(1, 2, 3))
-        self._index.add(2023, 'NAFTA', 'Packaging', data_struct.Observation(4, 5, 6))
+        i = 0
+        for sector in const.SECTORS:
+            self._index.add(2023, 'NAFTA', 'Transportation', data_struct.Observation(
+                i * 3 + 1,
+                i * 3 + 2,
+                i * 3 + 3
+            ))
+            i += 0
         self._decorated = normalization_util.NormalizingIndexedObservationsDecorator(self._index)
 
     def test_get_record(self):
