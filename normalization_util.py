@@ -88,8 +88,7 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
         if unnormalized_ratio is None:
             return None
 
-        all_sectors_maybe = map(lambda x: self._inner.get_record(year, region, x), const.SECTORS)
-        all_sectors = self._filter_for_valid(all_sectors_maybe)
+        all_sectors = map(lambda x: self._inner.get_record(year, region, x), const.SECTORS)
         sum_ratios = self._get_sum_ratios(all_sectors)
 
         return data_struct.Observation(
