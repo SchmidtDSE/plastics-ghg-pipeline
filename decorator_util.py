@@ -26,7 +26,7 @@ class DecoratedIndexedObservationsTask(luigi.Task):
         tasks_tuple = itertools.product(
             decorated_index.get_years(),
             decorated_index.get_regions(),
-            decorated_index.get_sectors()
+            decorated_index.get_subtypes()
         )
         output_dict = map(
             lambda x: self._get_observation_dict(decorated_index, x[0], x[1], x[2]),
@@ -52,20 +52,20 @@ class DecoratedIndexedObservationsTask(luigi.Task):
         return self._add_decorator(index)
 
     def _get_observation_dict(self, index: data_struct.IndexedObservations, year: int, region: str,
-        sector: str) -> typing.Optional[typing.Dict]:
+        subtype: str) -> typing.Optional[typing.Dict]:
         """Create a dictionary describing an observation from an IndexedObservations structure.
 
         Args:
             index: The index from which the dictionary should be derived.
             year: The year for which an observation dictionary is requested.
             region: The region for which an observation is requested.
-            sector: The sector for which an observation is requested.
+            subtype: The subtype for which an observation is requested.
 
         Returns:
             Dictionary representation of the observation or None if the dictionary could not be
             made.
         """
-        observation = index.get_record(year, region, sector)
+        observation = index.get_record(year, region, subtype)
         if observation is None:
             return None
 
@@ -73,7 +73,7 @@ class DecoratedIndexedObservationsTask(luigi.Task):
 
         observation_dict['year'] = year
         observation_dict['region'] = region
-        observation_dict['sector'] = sector
+        observation_dict['subtype'] = subtype
 
         return observation_dict
 
@@ -104,7 +104,7 @@ class DecoratedIndexedObservationsTask(luigi.Task):
         """Determine if "incomplete" records are allowed.
 
         Returns:
-            True if the index created from observations on disk should include those without sector
+            True if the index created from observations on disk should include those without subtype
             to overall trade ratios or false if those ratios are required.
         """
         raise NotImplementedError('Use implementor.')

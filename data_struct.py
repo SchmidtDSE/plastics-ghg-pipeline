@@ -9,7 +9,7 @@ import const
 
 
 def parse_ratio_str(target) -> typing.Optional[float]:
-    """Parse string describing a ratio of sector to overall trade or indicating that it is unknown.
+    """Parse string describing a ratio of subtype to overall trade or indicating that it is unknown.
 
     Args:
         target: The raw value to interpret.
@@ -30,7 +30,7 @@ class Observation:
         """Create a new observation record.
 
         Args:
-            ratio: The ratio of sector net trade to overall net trade for a region if known or None
+            ratio: The ratio of subtype net trade to overall net trade for a region if known or None
                 if unknown.
             gdp: The estimated GDP for the region for the year of this observation.
             population: The estimated population for the region for the year of this observation.
@@ -40,10 +40,10 @@ class Observation:
         self._population = population
 
     def get_ratio(self) -> typing.Optional[float]:
-        """Get the sector trade ratio.
+        """Get the subtype trade ratio.
 
         Returns:
-            The ratio of sector net trade to overall net trade for a region.
+            The ratio of subtype net trade to overall net trade for a region.
         """
         return self._ratio
 
@@ -70,7 +70,7 @@ class Observation:
             Dictionary serialization of this record.
         """
         return {
-            'ratioSector': self.get_ratio(),
+            'ratioSubtype': self.get_ratio(),
             'gdp': self.get_gdp(),
             'population': self.get_population()
         }
@@ -83,7 +83,7 @@ class Observation:
             Parsed version of this record.
         """
         return Observation(
-            parse_ratio_str(target['ratioSector']),
+            parse_ratio_str(target['ratioSubtype']),
             float(target['gdp']),
             float(target['population'])
         )
@@ -92,24 +92,24 @@ class Observation:
 class Change:
     """Record of a delta between years in input variables and response."""
 
-    def __init__(self, region: str, sector: str, year: int, years: int, gdp_change: float,
+    def __init__(self, region: str, subtype: str, year: int, years: int, gdp_change: float,
         population_change: float, before_ratio: float, after_ratio: typing.Optional[float]):
         """Create a new record describing a change between years.
 
         Args:
             region: The region like "NAFTA" in which the change is observed or predicted. Case
                 insensitive.
-            sector: The sector like "Packaging" in which the change is observed or predicted.
+            subtype: The subtype like "Packaging" in which the change is observed or predicted.
             year: The base year for the "before" values. Case insensitive.
             years: The time gap in years between the start and end year. May be negative.
             gdp_change: The percent change in GDP in the region where 1% is 0.01.
             population_change: The percent change in population in the region where 1% is 0.01.
-            before_ratio: The prior ratio of sector to overall net trade in the region (in year).
-            after_rato: The after ratio of sector to overall net trade in the region (in year +
+            before_ratio: The prior ratio of subtype to overall net trade in the region (in year).
+            after_rato: The after ratio of subtype to overall net trade in the region (in year +
                 years). Pass None if unknown.
         """
         self._region = region.lower()
-        self._sector = sector.lower()
+        self._subtype = subtype.lower()
         self._year = year
         self._years = years
         self._gdp_change = gdp_change
@@ -125,13 +125,13 @@ class Change:
         """
         return self._region
 
-    def get_sector(self) -> str:
-        """Get the sector that this observation, estimate, or prediction is for.
+    def get_subtype(self) -> str:
+        """Get the subtype that this observation, estimate, or prediction is for.
 
         Returns:
-            The sector like "Packaging" in which the change is observed or predicted.
+            The subtype like "Packaging" in which the change is observed or predicted.
         """
-        return self._sector
+        return self._subtype
 
     def get_year(self) -> int:
         """Get the starting year that this observation, estimate, or prediction is for.
@@ -166,18 +166,18 @@ class Change:
         return self._population_change
 
     def get_before_ratio(self) -> float:
-        """Get the ratio of sector to overall net trade in the "before" year.
+        """Get the ratio of subtype to overall net trade in the "before" year.
 
         Returns:
-            The prior ratio of sector to overall net trade in the region (in year).
+            The prior ratio of subtype to overall net trade in the region (in year).
         """
         return self._before_ratio
 
     def get_after_ratio(self) -> typing.Optional[float]:
-        """Get the ratio of sector to overall net trade in the "after" year.
+        """Get the ratio of subtype to overall net trade in the "after" year.
 
         Returns:
-            The after ratio of sector to overall net trade in the region (in year + years).
+            The after ratio of subtype to overall net trade in the region (in year + years).
         """
         return self._after_ratio
 
@@ -189,7 +189,7 @@ class Change:
         """
         return {
             'region': self.get_region(),
-            'sector': self.get_sector(),
+            'subtype': self.get_subtype(),
             'year': self.get_year(),
             'years': self.get_years(),
             'gdpChange': self.get_gdp_change(),
@@ -213,16 +213,16 @@ class Change:
         pieces_region: typing.List[typing.Union[int, float]] = [
             self._hot_encode(self._region, x) for x in const.REGIONS
         ]
-        pieces_sector: typing.List[typing.Union[int, float]] = [
-            self._hot_encode(self._sector, x) for x in const.SECTORS
+        pieces_subtype: typing.List[typing.Union[int, float]] = [
+            self._hot_encode(self._subtype, x) for x in const.SUBTYPES
         ]
-        return pieces_common + pieces_region + pieces_sector
+        return pieces_common + pieces_region + pieces_subtype
 
     def get_response(self) -> float:
         """Get the value to be predicted or that was predicted by the model.
 
         Returns:
-            The after ratio of sector to overall net trade in the region (in year + years).
+            The after ratio of subtype to overall net trade in the region (in year + years).
         """
         response = self.get_after_ratio()
 
@@ -248,7 +248,7 @@ class Change:
         """
         return Change(
             str(target['region']),
-            str(target['sector']),
+            str(target['subtype']),
             int(target['year']),
             int(target['years']),
             float(target['gdpChange']),
@@ -273,40 +273,40 @@ class Change:
 
 class IndexedObservations:
 
-    def add(self, year: int, region: str, sector: str, record: Observation):
+    def add(self, year: int, region: str, subtype: str, record: Observation):
         """Add a new record into this index, overwriting if a matching record is already present.
 
         Args:
             year: The year for which the observation was estimated or in which it was actually made.
             region: The region like "China" in which the observation was made or for which it was
                 estimated. Case insensitive.
-            sector: The sector like "Packaging" in which the observation was made or for which it
+            subtype: The subtype like "Packaging" in which the observation was made or for which it
                 was estimated. Case insensitive.
             record: The record to add to the index.
         """
         raise NotImplementedError('Use implementor.')
 
-    def get_record(self, year: int, region: str, sector: str) -> typing.Optional[Observation]:
+    def get_record(self, year: int, region: str, subtype: str) -> typing.Optional[Observation]:
         """Lookup a record.
 
         Args:
             year: The desired year for the observation.
             region: The desired region like "RoW" for the observation.
-            sector: The desired sector like "Agriculture" for the observation.
+            subtype: The desired subtype like "Agriculture" for the observation.
 
         Returns:
             The observation if one is found in the index and None otherwise.
         """
         raise NotImplementedError('Use implementor.')
 
-    def get_change(self, year: int, region: str, sector: str,
+    def get_change(self, year: int, region: str, subtype: str,
         years: int) -> typing.Optional[Change]:
-        """Calculate estimated or actual change between two years within a region and sector.
+        """Calculate estimated or actual change between two years within a region and subtype.
 
         Args:
             year: The base or starting year desired.
             region: The region in which to get the change like "EU30".
-            sector: The sector like "Building_Construction" in which to get the change.
+            subtype: The subtype like "Building_Construction" in which to get the change.
             years: The delta from the base or starting year to the end year such that end year is
                 year + years.
 
@@ -354,16 +354,16 @@ class IndexedObservations:
         """
         raise NotImplementedError('Use implementor.')
 
-    def get_sectors(self) -> typing.Iterable[str]:
-        """Get all observed sectors.
+    def get_subtypes(self) -> typing.Iterable[str]:
+        """Get all observed subtypes.
 
         Returns:
-            Iterable over the sectors seen in this index.
+            Iterable over the subtypes seen in this index.
         """
         raise NotImplementedError('Use implementor.')
 
-    def has_sector(self, target: str) -> bool:
-        """Determine if this index contains the given sector.
+    def has_subtype(self, target: str) -> bool:
+        """Determine if this index contains the given subtype.
 
         Args:
             target: The value to check for.
@@ -397,27 +397,27 @@ class KeyingObservationIndex(IndexedObservations):
         self._records: typing.Dict[str, Observation] = {}
         self._years: typing.Set[int] = set()
         self._regions: typing.Set[str] = set()
-        self._sectors: typing.Set[str] = set()
+        self._subtypes: typing.Set[str] = set()
 
-    def add(self, year: int, region: str, sector: str, record: Observation):
+    def add(self, year: int, region: str, subtype: str, record: Observation):
         region_lower = region.lower()
-        sector_lower = sector.lower()
+        subtype_lower = subtype.lower()
         self._years.add(year)
         self._regions.add(region_lower)
-        self._sectors.add(sector_lower)
+        self._subtypes.add(subtype_lower)
 
-        key = self._get_key(year, region_lower, sector_lower)
+        key = self._get_key(year, region_lower, subtype_lower)
 
         self._records[key] = record
 
-    def get_record(self, year: int, region: str, sector: str) -> typing.Optional[Observation]:
-        key = self._get_key(year, region, sector)
+    def get_record(self, year: int, region: str, subtype: str) -> typing.Optional[Observation]:
+        key = self._get_key(year, region, subtype)
         return self._records.get(key, None)
 
-    def get_change(self, year: int, region: str, sector: str,
+    def get_change(self, year: int, region: str, subtype: str,
         years: int) -> typing.Optional[Change]:
-        before = self.get_record(year, region, sector)
-        after = self.get_record(year + years, region, sector)
+        before = self.get_record(year, region, subtype)
+        after = self.get_record(year + years, region, subtype)
 
         if before is None or after is None:
             return None
@@ -429,7 +429,7 @@ class KeyingObservationIndex(IndexedObservations):
 
         return Change(
             region,
-            sector,
+            subtype,
             year,
             years,
             self._calculate_change(before.get_gdp(), after.get_gdp()),
@@ -450,30 +450,30 @@ class KeyingObservationIndex(IndexedObservations):
     def has_region(self, target: str) -> bool:
         return target.lower() in self._regions
 
-    def get_sectors(self) -> typing.Iterable[str]:
-        return self._sectors
+    def get_subtypes(self) -> typing.Iterable[str]:
+        return self._subtypes
 
-    def has_sector(self, target: str) -> bool:
-        return target.lower() in self._sectors
+    def has_subtype(self, target: str) -> bool:
+        return target.lower() in self._subtypes
 
-    def _get_key(self, year: int, region: str, sector: str) -> str:
-        """Get a string which uniquely identifies a year, region, sector combination.
+    def _get_key(self, year: int, region: str, subtype: str) -> str:
+        """Get a string which uniquely identifies a year, region, subtype combination.
 
         Args:
             year: Desired year.
             region: Desired region.
-            sector: Desired sector.
+            subtype: Desired subtype.
 
         Returns:
             Unique string (uniqueness enforced case insensitive).
         """
-        pieces = [year, region, sector]
+        pieces = [year, region, subtype]
         pieces_str = [str(x) for x in pieces]
 
         pieces_invalid = filter(lambda x: '\t' in x, pieces_str)
         pieces_invalid_count = sum(map(lambda x: 1, pieces_invalid))
         if pieces_invalid_count > 0:
-            raise RuntimeError('Tabs not allowed in region or sector names.')
+            raise RuntimeError('Tabs not allowed in region or subtype names.')
 
         return '\t'.join(pieces_str).lower()
 
@@ -482,7 +482,7 @@ def get_observation_included(require_response: bool, record: Observation) -> boo
     """Determine if an observation should be included in a dataset.
 
     Args:
-        require_response: Flag indicating if known ratios are required. True if the ratio of sector
+        require_response: Flag indicating if known ratios are required. True if the ratio of subtype
             to overall trade needs to be known for the observation to be in the dataset and False if
             it is not required.
         record: The record to consider.
@@ -498,7 +498,7 @@ def build_index_from_file(path: str, require_response: bool = False) -> IndexedO
 
     Args:
         path: The location of the CSV file from which the index should be constructed.
-        require_response: Flag indicating if known ratios are required. True if the ratio of sector
+        require_response: Flag indicating if known ratios are required. True if the ratio of subtype
             to overall trade needs to be known for the observation to be in the dataset and False if
             it is not required. Defaults to false.
 
@@ -518,7 +518,7 @@ def build_index_from_file(path: str, require_response: bool = False) -> IndexedO
                 ret_index.add(
                     int(record_raw['year']),
                     str(record_raw['region']),
-                    str(record_raw['sector']),
+                    str(record_raw['subtype']),
                     record
                 )
 

@@ -19,4 +19,4 @@ class ProjectTests(unittest.TestCase):
         serialized = self._task._get_observation_dict(self._index, 2023, 'NAFTA', 'Transportation')
         self.assertIsNotNone(serialized)
         self.assertEqual(serialized['year'], 2023)
-        self.assertEqual(serialized['ratioSector'], 1)
+        self.assertEqual(serialized['ratioSubtype'], 1)

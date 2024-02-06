@@ -22,9 +22,23 @@ SECTORS = [
     'Transportation'
 ]
 
+POLYMERS = [
+    '60% LDPE, 40% HDPE',
+    'PP',
+    'PS',
+    'PVC',
+    '100% OTP',
+    '50% OTP, 50% OTS',
+    'PET'
+    '100% OTP',
+    'PUR'
+]
+
+SUBTYPES = SECTORS + POLYMERS
+
 CHANGE_COLS = [
     'region',
-    'sector',
+    'subtype',
     'year',
     'years',
     'gdpChange',
@@ -35,14 +49,16 @@ CHANGE_COLS = [
 
 INPUTS_REGIONS = ['region_%s' % x for x in REGIONS]
 
-INPUTS_SECTORS = ['sector_%s' % x for x in SECTORS]
+INPUTS_SECTORS = ['subtype_%s' % x for x in SECTORS]
+
+INPUTS_POLYMERS = ['polymer_%s' % x for x in POLYMERS]
 
 INPUTS = [
     'years',
     'gdpChange',
     'populationChange',
     'beforeRatio',
-] + INPUTS_REGIONS + INPUTS_SECTORS
+] + INPUTS_REGIONS + INPUTS_SECTORS + INPUTS_POLYMERS
 
 RESPONSE = 'afterRatio'
 
@@ -60,8 +76,9 @@ SUPPORTED_ALGORITHMS = [
     'adaboost'
 ]
 
-ALLOWED_TEST_ERROR = 0.1
-ALLOWED_OUT_SAMPLE_ERROR = 0.1
+# Use ceiling that covers both resin (0.3) and goods trade (0.1)
+ALLOWED_TEST_ERROR = 0.3
+ALLOWED_OUT_SAMPLE_ERROR = 0.3
 
 EXPECTED_SWEEP_COLS = [
     'algorithm',
@@ -81,8 +98,8 @@ NUM_YEARS_INFERENCE_WINDOW = 5
 EXPECTED_PROJECTION_COLS = [
     'year',
     'region',
-    'sector',
-    'ratioSector',
+    'subtype',
+    'ratioSubtype',
     'gdp',
     'population'
 ]

@@ -35,12 +35,17 @@ class PreprocessDataTask(luigi.Task):
             lambda x: indexed_records.get_change(
                 x['baseYear'],
                 x['region'],
-                x['sector'],
+                x['subtype'],
                 x['yearDelta']
             ),
             tasks
         )
-        output_changes_dict = map(lambda x: x.to_dict(), output_changes)
+
+        # Resin and goods trade don't have the same years of actuals data so need to ignore changes
+        # in the non-overlapping timeseries.
+        output_changes_valid = filter(lambda x: x is not None, output_changes)
+
+        output_changes_dict = map(lambda x: x.to_dict(), output_changes_valid)
 
         self._write_changes(output_changes_dict)
 
@@ -57,14 +62,14 @@ class PreprocessDataTask(luigi.Task):
         years = index.get_years()
         year_delta = filter(lambda x: x != 0, range(-5, 6))
         regions = index.get_regions()
-        sectors = index.get_sectors()
+        subtypes = index.get_subtypes()
 
-        tasks_tuple = itertools.product(years, year_delta, regions, sectors)
+        tasks_tuple = itertools.product(years, year_delta, regions, subtypes)
         tasks = map(lambda x: {
             'baseYear': x[0],
             'yearDelta': x[1],
             'region': x[2],
-            'sector': x[3]
+            'subtype': x[3]
         }, tasks_tuple)
 
         tasks_with_displaced_year = map(
