@@ -17,7 +17,7 @@ import tasks_prepare
 
 
 class ProjectionTask(decorator_util.DecoratedIndexedObservationsTask):
-    """Project data without normalization."""
+    """Project data without normalization for debugging."""
 
     def requires(self):
         """Require data and model to project."""
