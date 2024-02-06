@@ -95,7 +95,7 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
         target_subtypes = const.SECTORS if is_goods else const.POLYMERS
 
         # Sum up the other ratios within the same series.
-        related_subtypes_maybe = map(lambda x: self._inner.get_record(year, region, x), target_subtypes)
+        related_subtypes = map(lambda x: self._inner.get_record(year, region, x), target_subtypes)
         sum_ratios = self._get_sum_ratios(related_subtypes)
 
         # Return normalized value
