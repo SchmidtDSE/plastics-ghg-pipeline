@@ -95,7 +95,10 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
         target_subtypes = const.SECTORS if is_goods else const.POLYMERS
 
         # Sum up the other ratios within the same series.
-        related_subtypes = map(lambda x: self._inner.get_record(year, region, x), target_subtypes)
+        related_subtypes: OBSERVATIONS_MAYBE = map(
+            lambda x: self._inner.get_record(year, region, x),
+            target_subtypes
+        )
         sum_ratios = self._get_sum_ratios(related_subtypes)
 
         # Return normalized value
@@ -130,7 +133,7 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
     def has_subtype(self, target: str) -> bool:
         return self._inner.has_subtype(target)
 
-    def _get_sum_ratios(self, target: OBSERVATIONS) -> float:
+    def _get_sum_ratios(self, target: OBSERVATIONS_MAYBE) -> float:
         """Get the sum of all ratios in a collection of observations.
 
         Args:
@@ -139,7 +142,7 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
         Returns:
             The sum of ratios found in target.
         """
-        all_ratios_maybe = map(lambda x: x.get_ratio(), target)
+        all_ratios_maybe = map(lambda x: None if x is None else x.get_ratio(), target)
         all_ratios_described = map(lambda x: RatioReduceRecord(
             1 if x is None else 0,
             0 if x is None else x
