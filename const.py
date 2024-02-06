@@ -51,12 +51,14 @@ INPUTS_REGIONS = ['region_%s' % x for x in REGIONS]
 
 INPUTS_SECTORS = ['subtype_%s' % x for x in SECTORS]
 
+INPUTS_POLYMERS = ['polymer_%s' % x for x in POLYMERS]
+
 INPUTS = [
     'years',
     'gdpChange',
     'populationChange',
     'beforeRatio',
-] + INPUTS_REGIONS + INPUTS_SECTORS
+] + INPUTS_REGIONS + INPUTS_SECTORS + INPUTS_POLYMERS
 
 RESPONSE = 'afterRatio'
 
