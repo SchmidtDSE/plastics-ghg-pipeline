@@ -159,7 +159,7 @@ class NormalizingIndexedObservationsDecorator(data_struct.IndexedObservations):
 
     def _get_ratio_if_available(self, target: OBSERVATION_MAYBE) -> typing.Optional[float]:
         """If an observation is present, try getting a ratio from it. Otherwise return None.
-        
+
         Args:
             target: The observation, if given, from which the ratio should be returned.
 
