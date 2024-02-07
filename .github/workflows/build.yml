@@ -17,7 +17,7 @@ jobs:
       - name: Install python deps
         run: pip install -r requirements.txt
       - name: Install optional build tools
-        run: pip install mypy pycodestyle pyflakes nose2
+        run: pip install mypy pycodestyle pyflakes nose2 types-requests
       - name: Check flakes
         run: pyflakes *.py
       - name: Check style
