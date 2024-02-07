@@ -69,7 +69,7 @@ jobs:
           username: ${{ secrets.SFTPUSER }}
           password: ${{ secrets.SFTPPASSWORD }}
           localPath: './ghg-pipeline.zip'
-          remotePath: './global-plastics-tool.org/data'
+          remotePath: './global-plastics-tool.org/data/'
       - name: Trigger
         uses: peter-evans/repository-dispatch@v2
         with:
