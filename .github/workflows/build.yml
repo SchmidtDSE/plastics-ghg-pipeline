@@ -41,10 +41,38 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run pipeline
         run: bash clean_and_build.sh
+      - name: Zip results
+        run: zip ghg-pipeline.zip -r deploy
       - name: Upload result
         uses: actions/upload-artifact@v3
         with:
-          name: deploy
-          path: deploy
+          name: ghg-pipeline
+          path: ghg-pipeline.zip
       - name: Check result
         run: bash check_result.sh
+  deploy:
+    runs-on: ubuntu-latest
+    environment: deploy
+    name: Deploy
+    #if: github.ref == 'refs/heads/deploy'
+    needs: [pipeline]
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ghg-pipeline
+      - name: Upload
+        uses: Creepios/sftp-action@v1.0.3
+        with:
+          host: ${{ secrets.SFTPHOST }}
+          port: 22
+          username: ${{ secrets.SFTPUSER }}
+          password: ${{ secrets.SFTPPASSWORD }}
+          localPath: './ghg-pipeline.zip'
+          remotePath: './global-plastics-tool.org/data'
+      - name: Trigger
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.CROSS_TOKEN }}
+          repository: SchmidtDSE/plastics-prototype
+          event-type: data-update
