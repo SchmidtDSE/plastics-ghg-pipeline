@@ -2,7 +2,6 @@
 
 License: BSD
 """
-import codecs
 import csv
 import json
 import os

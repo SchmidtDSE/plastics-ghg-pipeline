@@ -13,7 +13,7 @@ class GetTradeDataFileTests(unittest.TestCase):
         self._task = tasks_prepare.GetTradeDataFileTask()
 
     def test_parse_and_validate_row_valid_known(self):
-        result = self._task.parse_and_validate_row({
+        result = self._task._parse_and_validate_row({
             'year': '2013',
             'region': 'NAFTA',
             'subtype': 'Transportation',
@@ -24,7 +24,7 @@ class GetTradeDataFileTests(unittest.TestCase):
         self.assertAlmostEqual(result['ratioSubtype'], 1)
 
     def test_parse_and_validate_row_valid_unknown(self):
-        result = self._task.parse_and_validate_row({
+        result = self._task._parse_and_validate_row({
             'year': '2040',
             'region': 'NAFTA',
             'subtype': 'Transportation',
@@ -36,7 +36,7 @@ class GetTradeDataFileTests(unittest.TestCase):
 
     def test_parse_and_validate_row_invalid_region(self):
         with self.assertRaises(RuntimeError):
-            self._task.parse_and_validate_row({
+            self._task._parse_and_validate_row({
                 'year': '2013',
                 'region': 'NAFT',
                 'subtype': 'Transportatio',
@@ -47,7 +47,7 @@ class GetTradeDataFileTests(unittest.TestCase):
 
     def test_parse_and_validate_row_invalid_sector(self):
         with self.assertRaises(RuntimeError):
-            self._task.parse_and_validate_row({
+            self._task._parse_and_validate_row({
                 'year': '2013',
                 'region': 'NAFTA',
                 'subtype': 'Transportatio',
@@ -58,7 +58,7 @@ class GetTradeDataFileTests(unittest.TestCase):
 
     def test_parse_and_validate_row_invalid_ratio(self):
         with self.assertRaises(RuntimeError):
-            self._task.parse_and_validate_row({
+            self._task._parse_and_validate_row({
                 'year': '2013',
                 'region': 'NAFTA',
                 'subtype': 'Transportation',
@@ -69,7 +69,7 @@ class GetTradeDataFileTests(unittest.TestCase):
 
     def test_parse_and_validate_row_invalid_check(self):
         with self.assertRaises(RuntimeError):
-            self._task.parse_and_validate_row({
+            self._task._parse_and_validate_row({
                 'year': '2013',
                 'region': 'NAFTA',
                 'subtype': 'MISC',
@@ -80,7 +80,7 @@ class GetTradeDataFileTests(unittest.TestCase):
 
     def test_parse_and_validate_row_invalid_gdp(self):
         with self.assertRaises(RuntimeError):
-            self._task.parse_and_validate_row({
+            self._task._parse_and_validate_row({
                 'year': '2013',
                 'region': 'NAFTA',
                 'subtype': 'Transportation',
@@ -91,7 +91,7 @@ class GetTradeDataFileTests(unittest.TestCase):
 
     def test_parse_and_validate_row_invalid_population(self):
         with self.assertRaises(RuntimeError):
-            self._task.parse_and_validate_row({
+            self._task._parse_and_validate_row({
                 'year': '2013',
                 'region': 'NAFTA',
                 'subtype': 'Transportation',
