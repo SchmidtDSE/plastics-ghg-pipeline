@@ -66,7 +66,7 @@ class CheckConfigFileTask(luigi.Task):
         return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'task_checked.json'))
 
 
-class GetTradeDataFile(luigi.Task):
+class GetTradeDataFileTask(luigi.Task):
     """Task to download and check the trade data file."""
 
     def run(self):

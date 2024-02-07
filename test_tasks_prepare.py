@@ -10,7 +10,7 @@ import tasks_prepare
 class GetTradeDataFileTests(unittest.TestCase):
 
     def setUp(self):
-        self._task = tasks_prepare.GetTradeDataFile()
+        self._task = tasks_prepare.GetTradeDataFileTask()
 
     def test_parse_and_validate_row_valid_known(self):
         result = self._task.parse_and_validate_row({

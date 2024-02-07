@@ -22,7 +22,7 @@ class ProjectionTask(decorator_util.DecoratedIndexedObservationsTask):
     def requires(self):
         """Require data and model to project."""
         return {
-            'data': tasks_prepare.CheckTradeDataFileTask(),
+            'data': tasks_prepare.GetTradeDataFileTask(),
             'model': tasks_ml_prod.TrainProdModelTask()
         }
 
@@ -79,7 +79,7 @@ class ProjectAndNormalizeTask(decorator_util.DecoratedIndexedObservationsTask):
     def requires(self):
         """Require data and model to project."""
         return {
-            'data': tasks_prepare.CheckTradeDataFileTask(),
+            'data': tasks_prepare.GetTradeDataFileTask(),
             'model': tasks_ml_prod.TrainProdModelTask()
         }
 
