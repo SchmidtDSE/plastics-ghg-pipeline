@@ -74,11 +74,8 @@ class GetTradeDataFileTask(luigi.Task):
         # Open stream
         response = requests.get(const.TRADE_INPUTS_URL, stream=True)
         line_iterator = response.iter_lines()
-        reader = codecs.iterdecode(
-            csv.DictReader(line_iterator),
-            quotechar='"',
-            delimiter=','
-        )
+        string_iterator = map(lambda x: x.decode('utf-8'), line_iterator)
+        reader = csv.DictReader(string_iterator, quotechar='"', delimiter=',')
 
         # Check row values are expected
         validated_rows = map(lambda x: self._parse_and_validate_row(x), reader)
@@ -101,7 +98,7 @@ class GetTradeDataFileTask(luigi.Task):
         full_path = os.path.join(const.DEPLOY_DIR, const.TRADE_FRAME_NAME)
         return luigi.LocalTarget(full_path)
 
-    def parse_and_validate_row(self, target: typing.Dict) -> typing.Dict:
+    def _parse_and_validate_row(self, target: typing.Dict) -> typing.Dict:
         """Parse an input row and check that its values are as expected."""
         # Check region is known
         if target['region'] not in const.REGIONS:
@@ -132,7 +129,7 @@ class GetTradeDataFileTask(luigi.Task):
             if ratio is None:
                 raise RuntimeError('Ratio not available on required year %d.' % year)
 
-            if subtype_is_other and abs(ratio - 1) > const.UNKNOWN_RATIO_TOLLERANCE:
+            if subtype_is_other and abs(ratio - 0) > const.UNKNOWN_RATIO_TOLLERANCE:
                 raise RuntimeError('Unknown ratio exceeds allowance in year %d.' % year)
 
         # Ensure GDP
