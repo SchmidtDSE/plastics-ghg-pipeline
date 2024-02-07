@@ -144,3 +144,7 @@ RATIO_NONE_STRS = ['', 'none']
 
 # URL at which the raw trade inputs can be found
 TRADE_INPUTS_URL = 'https://global-plastics-tool.org/data/trade_inputs.csv'
+
+# Determine if normalization should be executed. True to execute, False to ask downstream smoothing
+# to handle.
+ENABLE_NORMALIZATION = False

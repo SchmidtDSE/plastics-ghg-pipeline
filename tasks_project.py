@@ -69,11 +69,11 @@ class NormalizationTask(decorator_util.DecoratedIndexedObservationsTask):
         return True
 
 
-class ProjectAndNormalizeTask(decorator_util.DecoratedIndexedObservationsTask):
-    """Production trask which both predicts unknown trade ratios and normalizes them.
+class MakeProdProjectionDataTask(decorator_util.DecoratedIndexedObservationsTask):
+    """Production trask which both predicts unknown trade ratios and normalizes them if enabled.
 
     Production trask which both predicts unknown trade ratios and normalizes them before writing the
-    updated data to disk.
+    updated data to disk where normalization is controlled by const.ENABLE_NORMALIZATION.
     """
 
     def requires(self):
@@ -96,10 +96,14 @@ class ProjectAndNormalizeTask(decorator_util.DecoratedIndexedObservationsTask):
         )
         model = projection_util.OnnxPredictor(inner_model)
         inferring_index = projection_util.InferringIndexedObservationsDecorator(index, model)
-        normalizing_index = normalization_util.NormalizingIndexedObservationsDecorator(
-            inferring_index
-        )
-        return normalizing_index
+        
+        if const.ENABLE_NORMALIZATION:
+            normalizing_index = normalization_util.NormalizingIndexedObservationsDecorator(
+                inferring_index
+            )
+            return normalizing_index
+        else:
+            return inferring_index
 
     def _get_require_response(self) -> bool:
         """Operate on all records."""

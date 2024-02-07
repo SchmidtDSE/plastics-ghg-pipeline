@@ -18,7 +18,7 @@ class SweepAndProjectTask(luigi.Task):
         """Require both sweep and projections."""
         return {
             'sweep': tasks_ml_sweep.ModelSweepTask(),
-            'projections': tasks_project.ProjectAndNormalizeTask()
+            'projections': tasks_project.MakeProdProjectionDataTask()
         }
 
     def run(self):
