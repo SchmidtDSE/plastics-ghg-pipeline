@@ -3,8 +3,10 @@
 License: BSD
 """
 import codecs
+import csv
 import json
 import os
+import typing
 
 import luigi  # type: ignore
 import requests
@@ -64,7 +66,7 @@ class CheckConfigFileTask(luigi.Task):
         return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'task_checked.json'))
 
 
-class GetTradeDataFile(CheckFileTask):
+class GetTradeDataFile(luigi.Task):
     """Task to download and check the trade data file."""
 
     def run(self):
@@ -73,7 +75,7 @@ class GetTradeDataFile(CheckFileTask):
         response = requests.get(const.TRADE_INPUTS_URL, stream=True)
         line_iterator = response.iter_lines()
         reader = codecs.iterdecode(
-            csv.DictReader(line_iterator), 
+            csv.DictReader(line_iterator),
             quotechar='"',
             delimiter=','
         )
@@ -81,14 +83,15 @@ class GetTradeDataFile(CheckFileTask):
         # Check row values are expected
         validated_rows = map(lambda x: self._parse_and_validate_row(x), reader)
 
-        # Remove the "check" polymer type which warns if there are unknown polymers
+        # Remove the "check" polymer type which warns if there are unknown polymers but is not
+        # useful for the machine learning or front end after ensuring the check passes.
         rows_no_other = filter(lambda x: x['subtype'] != const.OTHER_SUBTYPE, validated_rows)
 
         # Output
         with self.output().open('w') as f:
             writer = csv.DictWriter(f, fieldnames=const.EXPECTED_RAW_DATA_COLS)
             writer.writeheader()
-            writer.writerows(validated_rows)
+            writer.writerows(rows_no_other)
 
         # Close exhausted stream
         response.close()
@@ -97,8 +100,8 @@ class GetTradeDataFile(CheckFileTask):
         """Write to the deploy directory."""
         full_path = os.path.join(const.DEPLOY_DIR, const.TRADE_FRAME_NAME)
         return luigi.LocalTarget(full_path)
-    
-    def parse_and_validate_row(target -> typing.Dict) -> typing.Dict:
+
+    def parse_and_validate_row(self, target: typing.Dict) -> typing.Dict:
         """Parse an input row and check that its values are as expected."""
         # Check region is known
         if target['region'] not in const.REGIONS:
@@ -109,7 +112,7 @@ class GetTradeDataFile(CheckFileTask):
 
         # Check subtype is known
         subtype_tracked = target['subtype'] in const.SUBTYPES
-        subtype_valid = subtype_tracked or subtype_other
+        subtype_valid = subtype_tracked or subtype_is_other
         if not subtype_valid:
             raise RuntimeError('Subtype not known: ' + target['subtype'])
 
@@ -154,14 +157,14 @@ class GetTradeDataFile(CheckFileTask):
             'gdp': gdp,
             'population': population
         }
-    
+
     def _parse_float_maybe(self, target: str) -> typing.Optional[float]:
         """Try parsing a float but, if encountering unparseable value, return None."""
         try:
             return float(target)
         except ValueError:
             return None
-    
+
     def _parse_int_maybe(self, target: str) -> typing.Optional[int]:
         """Try parsing an int but, if encountering unparseable value, return None."""
         try:

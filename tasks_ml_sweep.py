@@ -15,7 +15,7 @@ import data_struct
 import ml_util
 
 
-class SweepTask:
+class SweepSubtask:
     """Record of a single task to be performed or that was performed in a model sweep."""
 
     def __init__(self, definition: ml_util.ModelDefinition, model=None,
@@ -58,7 +58,7 @@ class SweepTask:
         """
         return self._trained_model
 
-    def get_with_model(self, target) -> 'SweepTask':
+    def get_with_model(self, target) -> 'SweepSubtask':
         """Make a copy of this task record but with a new value for model.
 
         Args:
@@ -68,9 +68,9 @@ class SweepTask:
         Returns:
             Copy of this record with the new information.
         """
-        return SweepTask(self._definition, target, self._trained_model)
+        return SweepSubtask(self._definition, target, self._trained_model)
 
-    def get_with_trained_model(self, target: ml_util.TrainedModel) -> 'SweepTask':
+    def get_with_trained_model(self, target: ml_util.TrainedModel) -> 'SweepSubtask':
         """Make a copy of this task record but with a new value for trained model.
 
         Args:
@@ -80,7 +80,7 @@ class SweepTask:
         Returns:
             Copy of this record with the new information.
         """
-        return SweepTask(self._definition, self._model, target)
+        return SweepSubtask(self._definition, self._model, target)
 
     def get_sweep_dict(self) -> typing.Dict:
         """Build a dictionary describing this record and evaluation information if available.
@@ -111,7 +111,7 @@ class ModelSweepTask(ml_util.ModelTrainTask):
 
         definitions = self._get_model_definitions()
         tasks = map(
-            lambda x: SweepTask(x),
+            lambda x: SweepSubtask(x),
             definitions
         )
         models = map(

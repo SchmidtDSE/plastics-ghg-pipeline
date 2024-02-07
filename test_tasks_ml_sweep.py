@@ -10,7 +10,7 @@ import tasks_ml_sweep
 import ml_util
 
 
-class SweepTaskTests(unittest.TestCase):
+class SweepSubtaskTests(unittest.TestCase):
 
     def setUp(self):
         self._definition = ml_util.ModelDefinition('linear', alpha=0.1)
@@ -23,7 +23,7 @@ class SweepTaskTests(unittest.TestCase):
         )
 
     def test_get_with(self):
-        task = tasks_ml_sweep.SweepTask(self._definition)
+        task = tasks_ml_sweep.SweepSubtask(self._definition)
         task = task.get_with_model(self._model)
         task = task.get_with_trained_model(self._trained_model)
 
@@ -32,7 +32,7 @@ class SweepTaskTests(unittest.TestCase):
         self.assertIsNotNone(task.get_trained_model())
 
     def test_get_dict(self):
-        task = tasks_ml_sweep.SweepTask(
+        task = tasks_ml_sweep.SweepSubtask(
             self._definition,
             trained_model=self._trained_model
         )
