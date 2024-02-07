@@ -85,7 +85,7 @@ class MakeProdProjectionDataTask(decorator_util.DecoratedIndexedObservationsTask
 
     def output(self):
         """Output preprocessed data."""
-        return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'projected_and_normalized.csv'))
+        return luigi.LocalTarget(os.path.join(const.DEPLOY_DIR, 'production.csv'))
 
     def _add_decorator(self,
         index: data_struct.IndexedObservations) -> data_struct.IndexedObservations:
