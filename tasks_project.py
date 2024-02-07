@@ -96,7 +96,7 @@ class MakeProdProjectionDataTask(decorator_util.DecoratedIndexedObservationsTask
         )
         model = projection_util.OnnxPredictor(inner_model)
         inferring_index = projection_util.InferringIndexedObservationsDecorator(index, model)
-        
+
         if const.ENABLE_NORMALIZATION:
             normalizing_index = normalization_util.NormalizingIndexedObservationsDecorator(
                 inferring_index
