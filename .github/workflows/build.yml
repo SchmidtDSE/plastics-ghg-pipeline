@@ -61,7 +61,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ghg-pipeline
-      - name: Upload
+      - name: Upload zip
         uses: Creepios/sftp-action@v1.0.3
         with:
           host: ${{ secrets.SFTPHOST }}
@@ -69,6 +69,19 @@ jobs:
           username: ${{ secrets.SFTPUSER }}
           password: ${{ secrets.SFTPPASSWORD }}
           localPath: './ghg-pipeline.zip'
+          remotePath: './global-plastics-tool.org/data/'
+      - name: Unpack zip
+        run: unzip ghg-pipeline.zip
+      - name: Move production
+        run: cp ./deploy/production.csv ./production_ghg.csv
+      - name: Upload CSV
+        uses: Creepios/sftp-action@v1.0.3
+        with:
+          host: ${{ secrets.SFTPHOST }}
+          port: 22
+          username: ${{ secrets.SFTPUSER }}
+          password: ${{ secrets.SFTPPASSWORD }}
+          localPath: './production_ghg.csv'
           remotePath: './global-plastics-tool.org/data/'
       - name: Trigger
         uses: peter-evans/repository-dispatch@v2
