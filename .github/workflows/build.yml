@@ -73,7 +73,7 @@ jobs:
       - name: Unpack zip
         run: unzip ghg-pipeline.zip
       - name: Move production
-        run: cp ./deploy/production.csv ./production_ghg.csv
+        run: cp ./deploy/production.csv ./production_trade_subtype_ratios.csv
       - name: Upload CSV
         uses: Creepios/sftp-action@v1.0.3
         with:
@@ -81,7 +81,7 @@ jobs:
           port: 22
           username: ${{ secrets.SFTPUSER }}
           password: ${{ secrets.SFTPPASSWORD }}
-          localPath: './production_ghg.csv'
+          localPath: './production_trade_subtype_ratios.csv'
           remotePath: './global-plastics-tool.org/data/'
       - name: Trigger
         uses: peter-evans/repository-dispatch@v2
