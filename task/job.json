@@ -1,9 +1,9 @@
 {
     "model": {
         "algorithm": "random forest",
-        "depth": 25,
-        "estimators": 25,
-        "features": "log2",
+        "depth": 20,
+        "estimators": 15,
+        "features": "sqrt",
         "alpha": null,
         "kernel": null,
         "degree": null
