@@ -1,0 +1,97 @@
+name: Build
+on:
+  repository_dispatch:
+    types: [data-update]
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  checks:
+    name: Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        ref: deploy
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install python deps
+        run: pip install -r requirements.txt
+      - name: Install optional build tools
+        run: pip install mypy pycodestyle pyflakes nose2 types-requests
+      - name: Check flakes
+        run: pyflakes *.py
+      - name: Check style
+        run: pycodestyle *.py
+      - name: Check types
+        run: mypy *.py
+      - name: Run unit tests
+        run: nose2
+  pipeline:
+    name: Pipeline
+    runs-on: ubuntu-latest
+    needs: [checks]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        ref: deploy
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install python deps
+        run: pip install -r requirements.txt
+      - name: Run pipeline
+        run: bash clean_and_build.sh
+      - name: Zip results
+        run: zip ghg-pipeline.zip -r deploy
+      - name: Upload result
+        uses: actions/upload-artifact@v3
+        with:
+          name: ghg-pipeline
+          path: ghg-pipeline.zip
+      - name: Check result
+        run: bash check_result.sh
+  deploy:
+    runs-on: ubuntu-latest
+    environment: deploy
+    name: Deploy
+    if: github.ref == 'refs/heads/deploy'
+    needs: [pipeline]
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ghg-pipeline
+      - name: Upload zip
+        uses: Creepios/sftp-action@v1.0.3
+        with:
+          host: ${{ secrets.SFTPHOST }}
+          port: 22
+          username: ${{ secrets.SFTPUSER }}
+          password: ${{ secrets.SFTPPASSWORD }}
+          localPath: './ghg-pipeline.zip'
+          remotePath: './global-plastics-tool.org/data/'
+      - name: Unpack zip
+        run: unzip ghg-pipeline.zip
+      - name: Move production
+        run: cp ./deploy/production.csv ./production_trade_subtype_ratios.csv
+      - name: Upload CSV
+        uses: Creepios/sftp-action@v1.0.3
+        with:
+          host: ${{ secrets.SFTPHOST }}
+          port: 22
+          username: ${{ secrets.SFTPUSER }}
+          password: ${{ secrets.SFTPPASSWORD }}
+          localPath: './production_trade_subtype_ratios.csv'
+          remotePath: './global-plastics-tool.org/data/'
+      - name: Trigger
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.CROSS_TOKEN }}
+          repository: SchmidtDSE/plastics-prototype
+          event-type: data-update
