@@ -1,4 +1,5 @@
-# GHG Prep Pipeline
+GHG Prep Pipeline
+================================================================================
 [Luigi](https://luigi.readthedocs.io/en/stable/)-based pipeline to sweep and select machine learning models which are used for the greenhouse gas emissions layer at [https://global-plastics-tool.org/](https://global-plastics-tool.org/).
 
 
@@ -43,9 +44,36 @@ This pipeline can be deployed by merging to the `deploy` branch of the repositor
 
 <br>
 
+Local Environment
+--------------------------------------------------------------------------------
+Setup the local environment with `pip -r requirements.txt`.
+
+<br>
+
+Testing
+--------------------------------------------------------------------------------
+Some unit tests and other automated checks are available. The following is recommended:
+
+```
+$ pip install pycodestyle pyflakes nose2
+$ pyflakes *.py
+$ pycodestyle *.py
+$ nose2
+```
+
+Note that unit tests and code quality checks are run in CI / CD.
+
+<br>
+
 Development Standards
 --------------------------------------------------------------------------------
 CI / CD should be passing before merges to `main` which is used to stage pipeline deployments and `deploy`. Where possible, please follow the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html). Please note that tests run as part of the pipeline itself and separate test files are not included. That said, developers should document which tasks are tests and expand these tests like typical unit tests as needed in the future. We allow lines to go to 100 characters. Please include docstrings where possible (optional for private members and tests, can assume dostrings are inherited).
+
+<br>
+
+Related Repositories
+--------------------------------------------------------------------------------
+See also [source code for the web-based tool](https://github.com/SchmidtDSE/plastics-prototype) running at [global-plastics-tool.org](https://global-plastics-tool.org) and [source code for "main" pipeline](https://github.com/SchmidtDSE/plastics-pipeline).
 
 <br>
 
