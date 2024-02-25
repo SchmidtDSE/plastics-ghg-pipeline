@@ -1,4 +1,5 @@
-# GHG Prep Pipeline
+GHG Prep Pipeline
+================================================================================
 [Luigi](https://luigi.readthedocs.io/en/stable/)-based pipeline to sweep and select machine learning models which are used for the greenhouse gas emissions layer at [https://global-plastics-tool.org/](https://global-plastics-tool.org/).
 
 
@@ -40,6 +41,27 @@ Note that an interactive tool for this model is also available at [https://githu
 Deployment
 --------------------------------------------------------------------------------
 This pipeline can be deployed by merging to the `deploy` branch of the repository, firing GitHub actions. This will cause the pipeline output files to be written to [https://global-plastics-tool.org/ghgpipeline.zip](https://global-plastics-tool.org/ghgpipeline.zip).
+
+<br>
+
+Local Environment
+--------------------------------------------------------------------------------
+Setup the local environment with `pip -r requirements.txt`.
+
+<br>
+
+Testing
+--------------------------------------------------------------------------------
+Some unit tests and other automated checks are available. The following is recommended:
+
+```
+$ pip install pycodestyle pyflakes nose2
+$ pyflakes *.py
+$ pycodestyle *.py
+$ nose2
+```
+
+Note that unit tests and code quality checks are run in CI / CD.
 
 <br>
 
