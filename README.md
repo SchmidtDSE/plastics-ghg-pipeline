@@ -71,6 +71,12 @@ CI / CD should be passing before merges to `main` which is used to stage pipelin
 
 <br>
 
+Related Repositories
+--------------------------------------------------------------------------------
+See also [source code for the web-based tool](https://github.com/SchmidtDSE/plastics-prototype) running at [global-plastics-tool.org](https://global-plastics-tool.org) and [source code for "main" pipeline](https://github.com/SchmidtDSE/plastics-pipeline).
+
+<br>
+
 Open Source
 --------------------------------------------------------------------------------
 This project is released as open source (BSD and CC-BY-NC). See [LICENSE.md](https://github.com/SchmidtDSE/plastics-pipeline/blob/main/LICENSE.md) for further details. In addition to this, please note that this project uses the following open source:
