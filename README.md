@@ -13,16 +13,10 @@ Pipeline which executes pre-processing and model sweep / training before doing p
 
 Usage
 --------------------------------------------------------------------------------
-Most users can simply reference the output from the latest execution. That output is written to [https://global-plastics-tool.org/ghgpipeline.zip](https://global-plastics-tool.org/ghgpipeline.zip) and is publicly available under the [CC-BY-NC License](https://github.com/SchmidtDSE/plastics-pipeline/blob/main/LICENSE.md). That said, users may also leverage a local environment if desired.
+Most users can simply reference the output from the latest execution. That output is written to [https://global-plastics-tool.org/ghgpipeline.zip](https://global-plastics-tool.org/ghgpipeline.zip) and is publicly available under the [CC-BY-NC License](https://github.com/SchmidtDSE/plastics-pipeline/blob/main/LICENSE.md). That said, users may also leverage a local environment if desired. For common developer operations including adding regions or updating data, see the [cookbook](https://github.com/SchmidtDSE/plastics-ghg-pipeline/blob/main/COOKBOOK.md).
 
 ### Container Environment
-A containerized Docker environment is available for execution:
-
- - [Install Docker](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04)
- - Build the environment: `docker build -t dse/ghg_pipeline .`
- - Run the container: `docker run -it --name pipeline_run dse/ghg_pipeline bash clean_and_build.sh`
-
-This will prepare outputs required for the [front-end tool](https://github.com/SchmidtDSE/plastics-prototype).
+A containerized Docker environment is available for execution. This will prepare outputs required for the [front-end tool](https://github.com/SchmidtDSE/plastics-prototype). See [cookbook](https://github.com/SchmidtDSE/plastics-ghg-pipeline/blob/main/COOKBOOK.md) for more details.
 
 ### Manual Environment
 In addition to the Docker container, a manual environment can be established simply by running `pip install -r requirements.txt`. This assumes that sqlite3 is installed. Afterwards, simply run `bash build.sh`.
