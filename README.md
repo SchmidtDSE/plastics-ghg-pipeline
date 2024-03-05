@@ -20,7 +20,7 @@ A containerized Docker environment is available for execution:
 
  - [Install Docker](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04)
  - Build the environment: `docker build -t dse/ghg_pipeline .`
- - Run the container: `docker run -it --name pipeline_run dse/ghg_pipeline bash build.sh`
+ - Run the container: `docker run -it --name pipeline_run dse/ghg_pipeline bash clean_and_build.sh`
 
 This will prepare outputs required for the [front-end tool](https://github.com/SchmidtDSE/plastics-prototype).
 
