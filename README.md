@@ -84,3 +84,5 @@ The following are also potentially used as executables like from the command lin
 
  - [Docker](https://docs.docker.com/engine/) under the [Apache v2 License](https://github.com/moby/moby/blob/master/LICENSE).
  - [Python 3.8](https://www.python.org/) under the [PSF License](https://docs.python.org/3/license.html).
+
+Uses derivative data from the [base pipeline](https://github.com/SchmidtDSE/plastics-pipeline) which includes data licensing including information about third party sources used.
