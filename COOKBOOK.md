@@ -20,3 +20,8 @@ Afterwards, `ghg-pipeline.zip` contains the results of the execution.
 
 ## Adding a region
 Simply add the region name matching the expectations from the [upstream pipeline](https://github.com/SchmidtDSE/plastics-pipeline) to `regions.json` and execute the pipeline. This may require rebuilding the docker container.
+
+<br>
+
+## Updating data
+The input data are historical trade and socioeconomic (population / GDP) projections from the [base pipeline](https://github.com/SchmidtDSE/plastics-prototype) with trivial reorganization. In general, these data do not require updates upon changing the base pipeline unless those external projections or actuals change. Even so, these can be overidden from the [default file](https://global-plastics-tool.org/data/trade_inputs.csv) by changing `deploy/trade_inputs.csv`.
