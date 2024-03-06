@@ -2,6 +2,10 @@
 
 License: BSD
 """
+import json
+import os
+
+
 # Column which serves as an internal check that all polymers are accounted for
 OTHER_SUBTYPE = 'MISC'
 
@@ -27,12 +31,12 @@ EXPECTED_RAW_DATA_COLS = [
 MIN_YEAR = 2005
 
 # Expected regions
-REGIONS = [
-    'China',
-    'EU30',
-    'NAFTA',
-    'RoW'
-]
+parent_dir = os.path.dirname(os.path.abspath(__file__))
+path_to_regions = os.path.join(parent_dir, 'regions.json')
+with open(path_to_regions) as f:
+    REGIONS_INFO = json.load(f)
+
+REGIONS = [x['name'] for x in REGIONS_INFO['regions']]
 
 # Expected subtypes for goods
 SECTORS = [
