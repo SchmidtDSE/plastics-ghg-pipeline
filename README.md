@@ -71,6 +71,12 @@ See also [source code for the web-based tool](https://github.com/SchmidtDSE/plas
 
 <br>
 
+Data and Citation
+--------------------------------------------------------------------------------
+This repository uses data from [J. Zheng, S. Suh, Strategies to reduce the global carbon footprint of plastics. Nat. Clim. Chang. 9, 374–378 (2019)](https://www.nature.com/articles/s41558-019-0459-z). Our thanks  for their contribution.
+
+<br>
+
 Open Source
 --------------------------------------------------------------------------------
 This project is released as open source (BSD and CC-BY-NC). See [LICENSE.md](https://github.com/SchmidtDSE/plastics-pipeline/blob/main/LICENSE.md) for further details. In addition to this, please note that this project uses the following open source:
